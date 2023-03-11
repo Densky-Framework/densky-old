@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{ data.title }</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <p>
+      The following text is getted from path params:&nbsp;{data.param}
+    </p>
+    { data.num + 1 }&nbsp;(Num query param + 1)
+    <p> { data.condition } </p>
+    {! if (data.condition) }
+      <p> It's TRUE </p>
+    {/ else }
+      <p> It's FALSE </p>
+    {/}
+  </body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "densky": "../mod.ts",
+    "densky/": "../src/"
+  }
+}

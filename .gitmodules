@@ -1,0 +1,6 @@
+[submodule "packages/core"]
+	path = packages/core
+	url = https://github.com/Densky-Framework/core.git
+[submodule "packages/dynamic-html"]
+	path = packages/dynamic-html
+	url = https://github.com/Densky-Framework/dynamic-html.git
