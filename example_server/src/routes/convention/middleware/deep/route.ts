@@ -1,7 +1,5 @@
-import { HTTPRequest, IController } from "densky";
+import { HTTPRequest } from "densky";
 
-export default class Controller implements IController {
-  GET(req: HTTPRequest) {
-    return new Response("ROUTE: Matched " + req.pathname);
-  }
+export function GET(req: HTTPRequest) {
+  return new Response("ROUTE: Matched " + req.pathname);
 }

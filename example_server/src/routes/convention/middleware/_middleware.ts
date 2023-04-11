@@ -1,9 +1,7 @@
-import { HTTPRequest, IController } from "densky";
+import { HTTPRequest } from "densky";
 
-export default class Controller implements IController {
-  GET(req: HTTPRequest) {
-    if (req.url.searchParams.has("mid")) {
-      return new Response("MIDDLEWARE: Matched " + req.pathname);
-    }
+export function GET(req: HTTPRequest) {
+  if (req.url.searchParams.has("mid")) {
+    return new Response("MIDDLEWARE: Matched " + req.pathname);
   }
 }

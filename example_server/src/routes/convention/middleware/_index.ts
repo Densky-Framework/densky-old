@@ -1,10 +1,8 @@
-import { HTTPRequest, IController } from "densky";
+import { HTTPRequest } from "densky";
 
-export default class Controller implements IController {
-  GET(req: HTTPRequest) {
-    return new Response(
-      "INDEX: Matched " + req.pathname +
-        "\nYou can use ?mid in the url for test middleware",
-    );
-  }
+export function GET(req: HTTPRequest) {
+  return new Response(
+    "INDEX: Matched " + req.pathname +
+      "\nYou can use ?mid in the url for test middleware",
+  );
 }

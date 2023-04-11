@@ -1,9 +1,7 @@
-import { HTTPRequest, IController } from "densky";
+import { HTTPRequest } from "densky";
 
-export default class Controller implements IController {
-  GET(req: HTTPRequest) {
-    return new Response(
-      "PARAM: Matched (" + req.params.get("p1") + ") " + req.pathname,
-    );
-  }
+export function GET(req: HTTPRequest) {
+  return new Response(
+    "PARAM: Matched (" + req.params.get("p1") + ") " + req.pathname,
+  );
 }

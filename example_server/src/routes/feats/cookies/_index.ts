@@ -1,7 +1,5 @@
-import { HTTPRequest, IController } from "densky";
+import { HTTPRequest } from "densky";
 
-export default class CookiesController implements IController {
-  GET(req: HTTPRequest) {
-    return Response.json(req.cookies.raw);
-  }
+export function GET(req: HTTPRequest) {
+  return Response.json(req.cookies.raw);
 }
