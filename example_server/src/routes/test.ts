@@ -1,5 +1,10 @@
-import { HTTPResponse } from "densky";
+import { outFunction } from "../outFunction.ts";
+const externalVar = "World";
 
-export async function GET() {
-  return await HTTPResponse.view("index.html");
+export function GET() {
+  return new Response("Hello " + externalVar + outFunction(1, 2));
 }
+
+const completeText = "Hello " + externalVar;
+
+export default () => {new Response(completeText);}
