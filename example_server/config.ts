@@ -1,8 +1,8 @@
-import { CompileOptions } from "densky/compiler.ts";
-import { Globals } from "densky";
+import { CompileOptions } from "densky/types.ts";
+import { setCWD } from "densky/global.ts";
 
 const pathname = new URL(import.meta.resolve("./")).pathname;
-Globals.cwd = pathname;
+setCWD(pathname);
 
 console.log("Running on " + pathname);
 

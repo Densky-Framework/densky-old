@@ -1,6 +1,6 @@
 {
   "imports": {
-    "densky": "../mod.ts",
-    "densky/": "../src/"
+    "densky": "../packages/runtime/mod.ts",
+    "densky/": "../packages/runtime/"
   }
 }

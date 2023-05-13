@@ -7,4 +7,6 @@ export function GET() {
 
 const completeText = "Hello " + externalVar;
 
-export default () => {new Response(completeText);}
+export default () => {
+  new Response(completeText);
+};

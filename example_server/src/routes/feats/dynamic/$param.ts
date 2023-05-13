@@ -6,10 +6,11 @@ export async function GET(req: HTTPRequest) {
   const param = req.params.get("param") || "PARAM";
   const num = parseInt(req.url.searchParams.get("num") || "0") || 0;
 
-  return await HTTPResponse.view("dynamic.html", {
+  return await HTTPResponse.view("dynamic", {
     condition,
     param,
     num,
+    obj: {hi: 1},
     title: "Dynamic",
   });
 }
