@@ -7,3 +7,6 @@
 [submodule "packages/runtime"]
 	path = packages/runtime
 	url = https://github.com/Densky-Framework/runtime-ts.git
+[submodule "packages/cli"]
+	path = packages/cli
+	url = https://github.com/Densky-Framework/cli.git
