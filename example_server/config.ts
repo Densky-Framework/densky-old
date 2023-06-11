@@ -1,6 +1,7 @@
 import { CompileOptions } from "densky/types.ts";
 import { setCWD } from "densky/global.ts";
 
+// I will not need this anymore.
 const pathname = new URL(import.meta.resolve("./")).pathname;
 setCWD(pathname);
 
@@ -13,5 +14,5 @@ export const compileOptions: CompileOptions = {
   staticPrefix: "/static",
   viewsPath: "src/views",
   verbose: true,
-  dynamicHtml: true,
+  // dynamicHtml: true,
 };

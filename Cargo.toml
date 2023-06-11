@@ -1,5 +1,6 @@
 [workspace]
 members = [
   "packages/dynamic-html",
-  "packages/core"
+  "packages/core",
+  "packages/cli"
 ]
