@@ -1,0 +1,29 @@
+#!/bin/bash
+
+cd example_server || exit 1
+
+mkdir TEST_DIR
+cd TEST_DIR || exit 1
+sleep 0.5
+
+touch TEST_FILE_A
+sleep 0.5
+
+echo "Lorem ipsum dolor\n" >> TEST_FILE_A
+sleep 0.5
+echo "Lorem ipsum dolor\n" >> TEST_FILE_A
+sleep 0.5
+
+mv TEST_FILE_A TEST_FILE_B
+sleep 0.5
+
+echo "Lorem ipsum dolor\n" >> TEST_FILE_B
+sleep 0.5
+echo "Lorem ipsum dolor\n" >> TEST_FILE_B
+sleep 0.5
+
+rm TEST_FILE_B
+sleep 0.5
+
+cd .. || exit 1
+rm -rf TEST_DIR

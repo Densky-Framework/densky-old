@@ -2,8 +2,8 @@
   "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
 
   "tasks": {
-    "dev": "deno run -A --watch ./dev.ts",
-    "build": "deno run -A ./build.ts",
+    "dev": "cargo run --package cli -- dev",
+    "build": "cargo run --package cli -- build",
     "start": "deno run --allow-read=./ --allow-net ./main.ts"
   },
 

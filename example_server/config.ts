@@ -7,7 +7,7 @@ setCWD(pathname);
 
 console.log("Running on " + pathname);
 
-export const compileOptions: CompileOptions = {
+export default {
   routesPath: "src/routes",
   wsPath: "src/ws",
   staticPath: "src/static",
@@ -15,4 +15,4 @@ export const compileOptions: CompileOptions = {
   viewsPath: "src/views",
   verbose: true,
   // dynamicHtml: true,
-};
+} as CompileOptions;
