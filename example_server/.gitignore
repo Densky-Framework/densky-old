@@ -1,2 +1,4 @@
 .densky/
 deno.lock
+
+example_server
