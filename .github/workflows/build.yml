@@ -1,7 +1,6 @@
 name: Build
 
-on:
-  workflow_run:
+on: workflow_dispatch
 
 env:
   CARGO_TERM_COLOR: always
