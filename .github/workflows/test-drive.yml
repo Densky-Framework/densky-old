@@ -1,0 +1,21 @@
+name: Build
+
+on: workflow_dispatch
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Upload a file to Google Drive
+      uses: willo32/google-drive-upload-action@v1
+      with:
+        target: .
+        credentials: ${{ secrets.DRIVE }}
+        parent_folder_id: 1aznzGRhRx0avR8jQDxfp9jojzwC9VbSI
