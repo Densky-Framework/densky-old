@@ -12,10 +12,20 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        submodules: true
-    - name: Upload a file to Google Drive
-      uses: willo32/google-drive-upload-action@v1
+        submodules: true  
+    
+    - name: Save file
+      run: mv example_server/config.ts densky
+      
+    - name: Remove unused
+      run: |
+        rm -r example_server
+        rm -r packages
+        
+    - name: Commit it
+      uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        target: .
-        credentials: ${{ secrets.DRIVE }}
-        parent_folder_id: 1aznzGRhRx0avR8jQDxfp9jojzwC9VbSI
+        commit_message: "action: upload build"
+        branch: build/ubuntu-latest
+
+        push_options: '--force'
