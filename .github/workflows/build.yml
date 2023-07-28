@@ -11,6 +11,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    
+    permissions:
+      contents: write
 
     steps:
     - uses: actions/checkout@v3
@@ -18,9 +21,21 @@ jobs:
         submodules: true
     - name: Build
       run: cargo build --verbose --release
-    - name: Upload a file to Google Drive
-      uses: willo32/google-drive-upload-action@v1
+    
+    - name: Save file
+      run: mv target/release/densky densky
+      
+    - name: Remove unused
+      run: |
+        rm -r example_server
+        rm -r packages
+        rm -r target
+        
+    - name: Commit it
+      uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        target: target/release
-        credentials: ${{ secrets.DRIVE }}
-        parent_folder_id: 1aznzGRhRx0avR8jQDxfp9jojzwC9VbSI
+        commit_message: "action: upload build"
+        branch: build-${{ matrix.os }}
+
+        push_options: '--force'
+        create_branch: true
