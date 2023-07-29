@@ -1,0 +1,30 @@
+name: Deploy
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Needed for auth with Deno Deploy
+      contents: read # Needed to clone the repository
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1.1.2
+
+      - name: Build step
+        run: |
+          cd example_server
+          cargo run --release -- build
+
+      - name: Upload to Deno Deploy
+        uses: denoland/deployctl@v1
+        with:
+          project: "soft-parrot-94"
+          entrypoint: "main.ts" # 📝 Update the entrypoint
+          root: "example_server" # 📝 Update the root
