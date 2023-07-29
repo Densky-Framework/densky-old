@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "densky": "https://deno.land/x/densky@v1.1.0/mod.ts",
+    "densky/": "https://deno.land/x/densky@v1.1.0/"
+  }
+}
