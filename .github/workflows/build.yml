@@ -29,12 +29,15 @@ jobs:
         include:
           - os: ubuntu-latest
             bin_name: densky-linux-x64
+            bin_path: target/release/densky
             will_run: ${{ inputs.Linux }}
           - os: macos-latest
             bin_name: densky-macos-x64
+            bin_path: target/release/densky
             will_run: ${{ inputs.Macos }}
           - os: windows-latest
             bin_name: densky-windows-x64.exe
+            bin_path: target/release/densky.exe
             will_run: ${{ inputs.Windows }}
     runs-on: ${{ matrix.os }}
 
@@ -51,4 +54,4 @@ jobs:
       if: ${{ matrix.will_run }}
       with:
         name: ${{ matrix.bin_name }}
-        path: target/**/densky
+        path: ${{ matrix.bin_path }}
