@@ -22,7 +22,7 @@ jobs:
       - name: Build step
         run: |
           cd example_server
-          cargo run --release -- build
+          cargo run --bin densky --release -- build
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
