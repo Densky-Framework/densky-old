@@ -18,7 +18,12 @@ jobs:
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1.1.2
-
+      
+      - name: Select production import_map.json
+        run: |
+          rm import_map.json
+          mv import_map.prod.json import_map.json
+          
       - name: Build step
         run: |
           cd example_server
