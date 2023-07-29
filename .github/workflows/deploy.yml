@@ -21,6 +21,7 @@ jobs:
       
       - name: Select production import_map.json
         run: |
+          cd example_server
           rm import_map.json
           mv import_map.prod.json import_map.json
           
