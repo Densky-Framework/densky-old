@@ -1,41 +1,54 @@
 name: Build
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      Linux:
+        description: 'Build on Linux - Ubuntu'
+        required: false
+        type: boolean
+      Macos:
+        description: 'Build on Macos'
+        required: false
+        type: boolean
+      Windows:
+        description: 'Build on Windows'
+        required: false
+        type: boolean
 
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: write
+      
 jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            bin_name: densky-linux-x64
+            will_run: ${{ inputs.Linux }}
+          - os: macos-latest
+            bin_name: densky-macos-x64
+            will_run: ${{ inputs.Macos }}
+          - os: windows-latest
+            bin_name: densky-windows-x64.exe
+            will_run: ${{ inputs.Windows }}
     runs-on: ${{ matrix.os }}
-    
-    permissions:
-      contents: write
 
     steps:
     - uses: actions/checkout@v3
+      if: ${{ matrix.will_run }}
       with:
         submodules: true
     - name: Build
+      if: ${{ matrix.will_run }}
       run: cargo build --verbose --release
-    
-    - name: Save file
-      run: mv target/release/densky densky
-      
-    - name: Remove unused
-      run: |
-        rm -r example_server
-        rm -r packages
-        rm -r target
-        
-    - name: Commit it
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: "action: upload build"
-        branch: build-${{ matrix.os }}
 
-        push_options: '--force'
-        create_branch: true
+    - uses: actions/upload-artifact@v3
+      if: ${{ matrix.will_run }}
+      with:
+        name: ${{ matrix.bin_name }}
+        path: target/release/densky
