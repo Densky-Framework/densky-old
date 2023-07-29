@@ -51,4 +51,4 @@ jobs:
       if: ${{ matrix.will_run }}
       with:
         name: ${{ matrix.bin_name }}
-        path: target/release/densky
+        path: target/**/densky
