@@ -1,6 +1,8 @@
 [workspace]
 members = [
-  "packages/dynamic-html",
+  "packages/adapter",
+  "packages/cli",
   "packages/core",
-  "packages/cli"
+  "packages/dynamic-html",
+  "clouds/http-router"
 ]

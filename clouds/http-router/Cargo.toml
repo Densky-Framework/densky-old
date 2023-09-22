@@ -1,0 +1,16 @@
+[package]
+name = "cloud-http-router"
+description = "HTTP router cloud for Densky Framework"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+homepage = "https://github.com/Densky-Framework/densky"
+documentation = "https://densky.apika.me"
+repository = "https://github.com/Densky-Framework/densky"
+
+[lib]
+crate-type = ["dylib"]
+path = "src/lib.rs"
+
+[dependencies]
+densky-adapter = { version = "0.2.0", path = "../../packages/adapter" }

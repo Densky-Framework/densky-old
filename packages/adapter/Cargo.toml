@@ -1,0 +1,12 @@
+[package]
+name = "densky-adapter"
+description = "Cloud adapter for Densky Framework"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+homepage = "https://github.com/Densky-Framework/densky"
+documentation = "https://densky.apika.me"
+repository = "https://github.com/Densky-Framework/densky"
+
+[dependencies]
+pathdiff = "0.2.1"
