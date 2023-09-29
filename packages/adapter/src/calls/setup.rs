@@ -16,7 +16,7 @@ pub struct CloudDependency {
     pub optional: bool,
 }
 
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum CloudFilesStrategy {
     #[default]

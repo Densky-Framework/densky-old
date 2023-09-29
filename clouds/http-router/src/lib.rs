@@ -29,43 +29,44 @@ pub extern "C" fn cloud_post_setup() -> () {
 pub fn cloud_file_resolve(file: CloudFile, _context: CloudContextRaw) -> CloudFileResolve {
     let relative_path: PathBuf = file.relative_path.into();
 
-    let path_parts: Vec<&std::ffi::OsStr> = relative_path.iter().collect();
-    let dynamic_part = path_parts
-        .iter()
-        .enumerate()
-        .find(|f| (**f.1).to_string_lossy().starts_with('$'));
-
-    use CloudFileResolve::*;
-    if let Some(dynamic_part) = dynamic_part {
-        let mut prefix: Vec<String> = vec![];
-        let mut suffix: Vec<String> = vec![];
-
-        for (i, part) in path_parts.iter().enumerate() {
-            if i < dynamic_part.0 {
-                prefix.push(part.to_string_lossy().into());
-            } else if i > dynamic_part.0 {
-                suffix.push(part.to_string_lossy().into());
-            }
-        }
-
-        return Dynamic(
-            prefix.join("/").replace(".ts", ""),
-            dynamic_part.1.to_string_lossy().replace(".ts", "").into(),
-            suffix.join("/").replace(".ts", ""),
-        );
-    };
-
     let filename = relative_path.file_name().unwrap();
     let filename = filename.to_str().unwrap();
     let filename_first_char = &filename[0..1];
     match filename_first_char {
         "_" => match filename {
-            "_index.ts" => Index,
-            "_middleware.ts" => SingleThorn("middleware"),
-            "_fallback.ts" => SingleThorn("fallback"),
-            _ => Ignore,
+            "_index.ts" => CloudFileResolve::Index,
+            "_middleware.ts" => CloudFileResolve::SingleThorn("middleware"),
+            "_fallback.ts" => CloudFileResolve::SingleThorn("fallback"),
+            _ => CloudFileResolve::Ignore,
         },
-        _ => Pass,
+        _ => {
+            let path_parts: Vec<&std::ffi::OsStr> = relative_path.iter().collect();
+            let dynamic_part = path_parts
+                .iter()
+                .enumerate()
+                .find(|f| (**f.1).to_string_lossy().starts_with('$'));
+
+            if let Some(dynamic_part) = dynamic_part {
+                let mut prefix: Vec<String> = vec![];
+                let mut suffix: Vec<String> = vec![];
+
+                for (i, part) in path_parts.iter().enumerate() {
+                    if i < dynamic_part.0 {
+                        prefix.push(part.to_string_lossy().into());
+                    } else if i > dynamic_part.0 {
+                        suffix.push(part.to_string_lossy().into());
+                    }
+                }
+
+                CloudFileResolve::Dynamic(
+                    prefix.join("/").replace(".ts", ""),
+                    dynamic_part.1.to_string_lossy().replace(".ts", "").into(),
+                    suffix.join("/").replace(".ts", ""),
+                )
+            } else {
+                CloudFileResolve::Pass
+            }
+        }
     }
 }
 

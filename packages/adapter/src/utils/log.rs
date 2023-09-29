@@ -72,6 +72,16 @@ macro_rules! _log {
 }
 
 #[macro_export(local_inner_macros)]
+macro_rules! log_error {
+    ([$title:expr] ($body_color:ident) $($body:tt)*) => {
+        $crate::log::_log!((Error, $title)[FgRed | Bold, "[{}]"] [$body_color] $($body)*);
+    };
+    ([$title:expr] $($body:tt)*) => {
+        $crate::log::_log!((Error, $title)[FgRed | Bold, "[{}]"] [FgYellow] $($body)*);
+    };
+}
+
+#[macro_export(local_inner_macros)]
 macro_rules! log_warn {
     ([$title:expr] ($body_color:ident) $($body:tt)*) => {
         $crate::log::_log!((Warn, $title)[FgYellow | Bold, "[{}]"] [$body_color] $($body)*);
@@ -237,6 +247,7 @@ impl<T: PathDebugDisplay> PathDebugDisplay for Option<T> {
 
 pub use _log;
 pub use log_debug;
+pub use log_error;
 pub use log_info;
 pub use log_trace;
 pub use log_warn;

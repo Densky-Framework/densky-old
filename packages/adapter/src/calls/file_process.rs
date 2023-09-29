@@ -31,8 +31,9 @@ pub enum CloudFileResolve {
     /// Skip the node
     Ignore,
 
-    /// Set parent leaf node
+    /// Remove the last part
     Index,
+
     /// It is used to mark a dynamic path.
     ///
     /// ## Structure
@@ -58,6 +59,58 @@ pub enum CloudFileResolve {
     /// CloudFileResolve::Dynamic("api", "version", "u/$user"); // It's recursive
     /// ```
     Dynamic(String, String, String),
+
+    /// Convert route to a `thorn` (marker) with the provided name.
+    ///
+    /// > This checks if already exists this thorn, error expected.
+    /// > Remember that we check the name of thorn.
+    ///
+    /// ## Structure
+    /// ```ignore
+    /// CloudFileResolve::SingleThorn(name)
+    /// ```
+    ///
+    /// ## Example
+    /// ```ignore
+    /// CloudFileResolve::SingleThorn("middleware");
+    /// CloudFileResolve::SingleThorn("fallback");
+    ///
+    /// // If try to create the same thorn on the same route
+    /// // It will create a conflict, so we show an error
+    /// CloudFileResolve::SingleThorn("middleware");
+    /// // > [OptimizedTree] Conflicting thorn "middleware". Inserting "xxx" when "xxx" already is
+    /// //   "middleware" thorn.
+    ///
+    /// // When you get it
+    /// let middlewares = container.single_thorn.get_all("middleware", self.absolute_path);
+    /// // : Vec<u64>
+    /// for middleware in middlewares {
+    ///     println!("Middleware ID: {middleware}");
+    /// }
+    /// ```
     SingleThorn(&'static str),
+
+    /// Convert route to a `thorn` (marker) with the provided name.
+    ///
+    /// > This thorn can be repeated.
+    ///
+    /// ## Structure
+    /// ```ignore
+    /// CloudFileResolve::MultiThorn(name)
+    /// ```
+    ///
+    /// ## Example
+    /// ```ignore
+    /// CloudFileResolve::MultiThorn("custom_handler");
+    /// CloudFileResolve::MultiThorn("other_handler");
+    /// CloudFileResolve::MultiThorn("custom_handler"); // Valid
+    ///
+    /// // When you get them
+    /// let custom_handlers = container.multi_thorn.get("custom_handler", self.absolute_path);
+    /// // : Vec<u64>
+    /// for custom_handler in custom_handlers {
+    ///     println!("Custom handler ID: {custom_handler}");
+    /// }
+    /// ```
     MultiThorn(&'static str),
 }

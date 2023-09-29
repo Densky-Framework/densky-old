@@ -85,7 +85,7 @@ macro_rules! create_color {
             }
         }
 
-        $vis use color_mod::$name;
+        $vis use self::color_mod::$name;
     };
 }
 

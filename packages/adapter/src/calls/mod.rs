@@ -1,8 +1,8 @@
 mod file_process;
 mod setup;
 
-pub use file_process::{CloudFile, CloudFileResolve};
-pub use setup::{CloudDependency, CloudFilesStrategy, CloudSetup};
+pub use self::file_process::{CloudFile, CloudFileResolve};
+pub use self::setup::{CloudDependency, CloudFilesStrategy, CloudSetup};
 
 use crate::context::CloudContextRaw;
 

@@ -5,8 +5,8 @@ mod color;
 pub mod log;
 mod url_to_matcher;
 
-pub use color::Color;
-pub use url_to_matcher::{UrlMatcher, UrlMatcherSegment};
+pub use self::color::Color;
+pub use self::url_to_matcher::{UrlMatcher, UrlMatcherSegment};
 
 pub fn relative_path<T: AsRef<Path>, B: AsRef<Path>>(target: T, base: B) -> Option<PathBuf> {
     let relative = pathdiff::diff_paths(target.as_ref(), base.as_ref())?;
