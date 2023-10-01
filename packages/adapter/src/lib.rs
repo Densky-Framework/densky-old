@@ -1,3 +1,6 @@
+extern crate ahash;
+extern crate pathdiff;
+
 mod calls;
 pub mod context;
 pub mod macros;

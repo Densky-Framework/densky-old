@@ -1,5 +1,25 @@
 use std::path::PathBuf;
 
+use ahash::AHashMap;
+
+/// This is the minimum unit for a Optimized Tree.
+/// This is used for transport basic data like file paths (i/o)
+/// between the core and plugins
+#[derive(Debug)]
+pub struct OptimizedTreeLeaf {
+    pub pathname: String,
+    pub relative_pathname: String,
+
+    pub index: Option<String>,
+
+    /// Map<Name, Vec<FilePath>>
+    pub single_thorns: AHashMap<String, Vec<String>>,
+
+    pub is_root: bool,
+    pub is_static: bool,
+    pub varname: Option<String>,
+}
+
 #[derive(Debug, Clone)]
 pub struct CloudFile {
     pub file_path: PathBuf,

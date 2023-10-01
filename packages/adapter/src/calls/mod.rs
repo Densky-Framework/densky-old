@@ -1,7 +1,7 @@
 mod file_process;
 mod setup;
 
-pub use self::file_process::{CloudFile, CloudFileResolve};
+pub use self::file_process::{CloudFile, CloudFileResolve, OptimizedTreeLeaf};
 pub use self::setup::{CloudDependency, CloudFilesStrategy, CloudSetup};
 
 use crate::context::CloudContextRaw;
@@ -39,7 +39,7 @@ create_call!(
     fn(CloudFile, CloudContextRaw) -> CloudFileResolve
 );
 create_call!(
-    CloudFileProcessCall,
+    CloudOptimizedTreeProcessCall,
     b"cloud_file_process",
-    fn(CloudFile, CloudContextRaw) -> ()
+    fn(OptimizedTreeLeaf, String, String, String) -> String
 );

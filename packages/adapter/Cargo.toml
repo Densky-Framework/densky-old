@@ -9,3 +9,4 @@ repository = "https://github.com/Densky-Framework/densky"
 
 [dependencies]
 pathdiff = "0.2.1"
+ahash = "0.8.3"
