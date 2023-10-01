@@ -1,0 +1,22 @@
+[package]
+name = "densky-core"
+description = "Heart of Densky Framework"
+version = "0.1.0"
+license = "MIT"
+homepage = "https://github.com/Densky-Framework/densky"
+documentation = "https://densky.apika.me"
+repository = "https://github.com/Densky-Framework/densky"
+
+[dependencies]
+dynamic-html = { version = "1.0.0", path = "../dynamic-html", default-features = false }
+densky-adapter = { path = "../adapter" }
+
+ahash = "0.8.3"
+colored = "2"
+libloading = "0.8.0"
+pathdiff = "0.2.1"
+regex = "1.7.1"
+recur-fn = "2.2.0"
+walkdir = "2.3.3"
+dprint-plugin-typescript = "0.88.1"
+
