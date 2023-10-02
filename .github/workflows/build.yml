@@ -5,15 +5,12 @@ on:
     inputs:
       Linux:
         description: 'Build on Linux - Ubuntu'
-        required: false
         type: boolean
       Macos:
         description: 'Build on Macos'
-        required: false
         type: boolean
       Windows:
         description: 'Build on Windows'
-        required: false
         type: boolean
 
 env:
@@ -29,15 +26,18 @@ jobs:
         include:
           - os: ubuntu-latest
             bin_name: densky-linux-x64
-            bin_path: target/release/densky
+            bin_path: densky
+            cloud_http: libcloud_http_router.so
             will_run: ${{ inputs.Linux }}
           - os: macos-latest
             bin_name: densky-macos-x64
-            bin_path: target/release/densky
+            bin_path: densky
+            cloud_http: libcloud_http_router.dylib
             will_run: ${{ inputs.Macos }}
           - os: windows-latest
             bin_name: densky-windows-x64.exe
-            bin_path: target/release/densky.exe
+            bin_path: densky.exe
+            cloud_http: cloud_http_router.dll
             will_run: ${{ inputs.Windows }}
     runs-on: ${{ matrix.os }}
 
@@ -46,12 +46,24 @@ jobs:
       if: ${{ matrix.will_run }}
       with:
         submodules: true
-    - name: Build
+        
+    - name: Build CLI
       if: ${{ matrix.will_run }}
-      run: cargo build --verbose --release
-
+      run: cargo build --package densky --verbose --release
+      
     - uses: actions/upload-artifact@v3
       if: ${{ matrix.will_run }}
       with:
         name: ${{ matrix.bin_name }}
-        path: ${{ matrix.bin_path }}
+        path: target/release/${{ matrix.bin_path }}
+    
+    - name: Build HTTP cloud
+      if: ${{ matrix.will_run }}
+      run: cargo build --package cloud-http-router --verbose --release
+      
+    - uses: actions/upload-artifact@v3
+      if: ${{ matrix.will_run }}
+      with:
+        name: ${{ matrix.cloud_http }}
+        path: target/release/${{ matrix.cloud_http }}
+
