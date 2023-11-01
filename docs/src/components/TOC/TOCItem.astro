@@ -1,0 +1,93 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  index: number;
+  item: MarkdownHeading;
+}
+
+const { index, item } = Astro.props;
+---
+
+<li
+  transition:name={"toc-" + index}
+  transition:animate="slide"
+  data-toc={item.slug}
+  class:list={{
+    depth_1: [1, 2].includes(item.depth),
+    depth_2: ![1, 2].includes(item.depth),
+  }}
+>
+  <a href={"#" + item.slug}>{item.text}</a>
+</li>
+
+<style lang="scss">
+  @use "@styles/utils";
+
+  li {
+    --readed-progress: 0;
+    --left-border: 0;
+
+    border-left: solid 2px var(--primary-light);
+    border-left-width: calc(var(--left-border) * 2px);
+  }
+
+  a {
+    background-color: transparent;
+    background-image: linear-gradient(
+      to right,
+      var(--primary-light) 0%,
+      var(--primary-light) var(--readed-progress),
+      transparent var(--readed-progress)
+    );
+
+    pointer-events: none;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    display: block;
+    font-size: 1rem;
+    color: white;
+    padding: 1rem;
+
+    :global(.open) & {
+      pointer-events: initial;
+    }
+
+    @include utils.breakpoint(utils.$breakpoint-lg) {
+      pointer-events: initial;
+      white-space: initial;
+      overflow: initial;
+      width: inital;
+      display: inline;
+      font-size: inherit;
+
+      color: initial;
+      padding: initial;
+
+      background-color: currentColor;
+      background-image: linear-gradient(
+        to right,
+        var(--primary-light) 0%,
+        var(--primary-light) var(--readed-progress),
+        var(--text) var(--readed-progress)
+      );
+
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  @include utils.breakpoint(utils.$breakpoint-lg) {
+    li {
+      padding-left: 1ch;
+      margin-left: -1ch;
+    }
+
+    .depth_2 {
+      padding-left: 2ch;
+    }
+  }
+</style>

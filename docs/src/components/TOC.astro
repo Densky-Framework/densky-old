@@ -1,0 +1,187 @@
+---
+import type { MarkdownHeading } from "astro";
+import TOCItem from "./TOC/TOCItem.astro";
+
+interface Props {
+  items: MarkdownHeading[];
+}
+
+const { items } = Astro.props;
+---
+
+<aside id="toc-container">
+  <div>
+    <h5>Table of content</h5>
+    <ul>
+      {items.map((item, idx) => <TOCItem index={idx} item={item} />)}
+    </ul>
+  </div>
+</aside>
+
+<script>
+  if ("IntersectionObserver" in window) {
+    function attachTOC() {
+      const tocContainer = document.getElementById("toc-container");
+      const tocItems = [
+        ...document.querySelectorAll("[data-toc]"),
+      ] as HTMLElement[];
+      const itemsByToc = new Map<
+        HTMLElement,
+        [HTMLElement, HTMLElement | null]
+      >();
+
+      const marginTop = 300;
+
+      let scrolled = false;
+      const update = (
+        tocElement: HTMLElement,
+        hElement: HTMLElement,
+        nextElement: HTMLElement | null,
+      ) => {
+        const hRect = hElement.getBoundingClientRect();
+        const hP = (hRect.y - marginTop) / window.innerHeight;
+
+        const nextHRect = nextElement?.getBoundingClientRect();
+        const nHP =
+          nextHRect == null
+            ? 1
+            : (nextHRect.y - marginTop) / window.innerHeight;
+
+        const range = nHP - hP;
+        const progress = hP > 0 ? 1 : nHP < 0 ? 0 : nHP / range;
+        const isAtThis = hP < 0 && nHP > 0;
+
+        if (!scrolled && isAtThis) {
+          tocContainer!.scrollTo(0, tocElement.offsetTop);
+          scrolled = true;
+        }
+
+        const readedProgress = -Math.max(0, Math.min(1, progress)) + 1;
+
+        tocElement.setAttribute(
+          "style",
+          "--readed-progress: " +
+            (readedProgress * 100).toFixed(2) +
+            "%;" +
+            "--left-border: " +
+            (isAtThis ? 1 : 0),
+        );
+      };
+
+      tocContainer?.scrollTo(0, 0);
+
+      // Load actual state with zero-interactivity
+      for (const [idx, item] of tocItems.entries()) {
+        const tocId = item.dataset.toc!;
+        const hElement = document.getElementById(tocId)!;
+        const nextHElement = tocItems[idx + 1]
+          ? document.getElementById(tocItems[idx + 1]!.dataset.toc!)
+          : null;
+        itemsByToc.set(item, [hElement, nextHElement]);
+        update(item, hElement, nextHElement);
+
+        hElement.addEventListener("click", () => {
+          if (hElement.classList.contains("copied")) return;
+          location.hash = hElement.id;
+          navigator.clipboard.writeText(location.href);
+
+          hElement.classList.add("copied");
+
+          setTimeout(() => {
+            hElement.classList.remove("copied");
+          }, 1000);
+        });
+      }
+
+      window.addEventListener("scroll", () => {
+        scrolled = false;
+
+        for (const [
+          tocElement,
+          [hElement, nextHElement],
+        ] of itemsByToc.entries()) {
+          update(tocElement, hElement, nextHElement);
+        }
+
+        if (!scrolled) tocContainer?.scrollTo(0, 0);
+      });
+
+      tocContainer?.addEventListener("click", () => {
+        setTimeout(() => tocContainer!.classList.toggle("open"), 1);
+      });
+    }
+
+    // Detect route change in dev-mode spa
+    window.on_router_change(attachTOC);
+    attachTOC();
+  }
+</script>
+
+<style lang="scss">
+  @use "../styles/utils";
+
+  aside {
+    --index: -1;
+    --scrollbar-background: transparent;
+
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    height: 3rem;
+    background: #eee1;
+    @include utils.dark(
+      background-image,
+      linear-gradient(to right bottom, #4328, #4321),
+      linear-gradient(to right bottom, #eee8, #eee1)
+    );
+    overflow: hidden;
+    border-radius: 10px;
+    opacity: 1;
+    backdrop-filter: blur(10px);
+
+    &.open {
+      height: 12rem;
+      overflow-y: auto;
+    }
+
+    @include utils.breakpoint(utils.$breakpoint-lg) {
+      overflow: initial !important;
+      background: transparent;
+      background-image: none !important;
+      position: static;
+      height: 100% !important;
+      padding: 1rem 1rem 1rem 0;
+    }
+  }
+
+  h5 {
+    font-size: 1rem;
+    color: #fff;
+    padding: 1rem;
+
+    @include utils.breakpoint(utils.$breakpoint-lg) {
+      font-size: 0.875rem;
+      margin-bottom: 1ch;
+      color: var(--text-contrast);
+      padding: 0;
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    @include utils.breakpoint(utils.$breakpoint-lg) {
+      gap: 1.25rem;
+    }
+  }
+
+  div {
+    position: sticky;
+    top: 70px;
+
+ //   margin-top: calc((var(--index) + 1) * -3.25rem);
+  }
+</style>

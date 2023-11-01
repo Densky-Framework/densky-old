@@ -1,0 +1,15 @@
+---
+const { fill = "currentColor", ...svgProps } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  {...svgProps}
+>
+  <path
+    d="M6 0 18 13 6 24"
+    fill="none"
+    stroke={fill}
+    stroke-width="3"
+    stroke-linecap="round"></path>
+</svg>

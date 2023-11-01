@@ -1,0 +1,68 @@
+---
+interface Props {
+  href?: string;
+}
+
+const { href } = Astro.props;
+
+const CardElement = href ? "a" : "div";
+---
+
+<CardElement class="card" href={href} title={href}>
+  <div class="icon">
+    <slot name="icon" />
+  </div>
+  <span>
+    <h2>
+      <slot name="title" />
+    </h2>
+    <p><slot /></p>
+  </span>
+</CardElement>
+
+<style lang="scss">
+  @use "../styles/utils";
+
+  .card {
+    border: solid #1f293780 2px;
+    border-radius: 0.75rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 1.25rem;
+    line-height: 1.25;
+
+    @include utils.dark_block {
+      background: #0a0c1080;
+    }
+
+    &:is(a) {
+      cursor: pointer;
+      border-color: var(--primary-light);
+border-style: dotted;
+
+      &:hover {
+        cursor: pointer;
+        // border-color: var(--primary-light);
+border-style: solid;
+filter: brightness(1.2);
+      }
+    }
+  }
+
+  .icon {
+    color: var(--primary-light);
+    margin-bottom: 0.75rem;
+    max-height: 40px;
+  }
+
+  h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--text);
+  }
+</style>

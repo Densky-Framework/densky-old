@@ -1,0 +1,240 @@
+---
+import SearcherItem from "./SearcherItem.astro";
+---
+
+<button id="searcher" class="searcher">
+  <!-- Search icon -->
+  <svg
+    class="searcher-icon"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 512 512"
+    width="24"
+    height="24"
+  >
+    <path
+      fill="currentColor"
+      d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+    ></path></svg
+  >
+  <span class="searcher-placeholder"> Search...</span>
+  <span class="searcher-keybind"> Ctrl K</span>
+</button>
+
+<div id="searcher-modal" class="searcher-modal tabtrap">
+  <div class="searcher-content">
+    <div class="searcher-fieldbox">
+      <!-- Search icon -->
+      <svg
+        class="searcher-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 512 512"
+        width="24"
+        height="24"
+      >
+        <path
+          fill="currentColor"
+          d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+        ></path></svg
+      >
+
+      <input
+        class="searcher-input"
+        type="search"
+        role="combobox"
+        aria-controls="search-list"
+        autocomplete="false"
+        placeholder="Search by keywords"
+        tabindex="-1"
+      />
+    </div>
+
+    <ul id="search-list" role="listbox" class="searcher-list">
+      <SearcherItem />
+      <SearcherItem />
+      <SearcherItem />
+      <SearcherItem />
+      <SearcherItem />
+      <SearcherItem />
+      <SearcherItem />
+    </ul>
+  </div>
+</div>
+
+<script>
+  import "../tabTrap.ts";
+
+  const attach = () => {
+    const searcherModal = document.getElementById("searcher-modal")!;
+    const searcherInput = searcherModal.getElementsByTagName("input")[0]!;
+    const body = document.body;
+    const open = () => {
+      body.classList.add("searcher-open");
+      searcherModal.classList.add("open");
+      searcherInput.focus();
+      document.body.style.overflow = "hidden";
+    };
+    const close = () => {
+      body.classList.remove("searcher-open");
+      searcherModal.classList.remove("open");
+
+      document.body.style.overflow = "auto";
+    };
+    document
+      .getElementById("searcher")
+      ?.addEventListener("click", () => open());
+    searcherModal.addEventListener?.(
+      "click",
+      (ev) => ev.target === ev.currentTarget && close(),
+    );
+
+    window.addEventListener("keydown", (ev) => {
+      if (ev.code === "KeyK" && ev.ctrlKey) {
+        ev.preventDefault();
+        if (searcherModal.classList.contains("open")) close();
+        else open();
+      } else if (ev.code === "Escape") {
+        ev.preventDefault();
+        close();
+      }
+    });
+    window.on_router_change(attach);
+  };
+
+  attach();
+</script>
+
+<style lang="scss">
+  @use "../../styles/utils";
+
+  .searcher {
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: none;
+
+    @include utils.breakpoint(utils.$breakpoint-lg) {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 20rem;
+      padding: 0.5rem;
+      border: solid #373f49 2px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      background-color: var(--secondary);
+
+      &:hover {
+        filter: brightness(0.9);
+      }
+
+      @include utils.dark_block {
+        &:hover {
+          filter: brightness(1.2);
+        }
+      }
+    }
+  }
+
+  .searcher-icon {
+    width: 1rem;
+    height: 1rem;
+    @include utils.breakpoint(utils.$breakpoint-lg) {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .searcher-placeholder {
+    display: none;
+
+    @include utils.breakpoint(utils.$breakpoint-lg) {
+      display: block;
+      width: 100%;
+    }
+  }
+
+  .searcher-keybind {
+    display: none;
+    @include utils.breakpoint(utils.$breakpoint-lg) {
+      display: block;
+      white-space: nowrap;
+    }
+  }
+
+  .searcher-modal {
+    display: none;
+  }
+
+  .searcher-modal.open {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 12;
+
+    backdrop-filter: blur(5px);
+
+    @include utils.dark(background-color, #0003, #fff2);
+  }
+
+  .searcher-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 40rem;
+    height: min-content;
+    background-color: var(--background);
+    overflow: hidden;
+
+    border-radius: 0 0 7px 7px;
+    max-height: calc(100vh - 6rem);
+
+    @include utils.breakpoint(utils.$breakpoint-md) {
+      max-height: 20rem;
+      border-radius: 7px;
+      margin: 5rem 0;
+    }
+  }
+
+  .searcher-fieldbox {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 1ch;
+    padding: 1rem;
+    border-bottom: solid #555 1px;
+  }
+
+  .searcher-input {
+    background: transparent;
+    border: none;
+    width: 100%;
+    font-size: 1.1rem;
+
+    &::-webkit-search-cancel-button {
+      opacity: 1;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .searcher-list {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    width: 100%;
+    list-style: none;
+    appearance: none;
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+  }
+</style>

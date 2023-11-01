@@ -1,0 +1,24 @@
+[package]
+name = "densky"
+description = "Densky is the backend framework for Deno"
+version = "0.1.0"
+license = "MIT"
+homepage = "https://github.com/Densky-Framework/densky"
+documentation = "https://densky.apika.me"
+repository = "https://github.com/Densky-Framework/densky"
+
+[[bin]]
+name = "densky"
+path = "src/main.rs"
+
+[dependencies]
+anstyle = "1.0.0"
+clap = { version = "4.3.3", features = ["cargo", "unstable-styles"] }
+densky-core = { version = "0.1.0", path = "../core" }
+
+ahash = "0.8.3"
+recv-dir = "0.2.0"
+
+ureq = "2.6.2"
+signal-hook = "0.3"
+indicatif = "0.17.5"

@@ -1,0 +1,29 @@
+---
+import type { SidebarEntry } from "@utils/navigation";
+import SidebarGroup from "./SidebarGroup.astro";
+import SidebarItem from "./SidebarItem.astro";
+
+interface Props {
+  group: string;
+  entry: SidebarEntry;
+}
+
+const {group, entry } = Astro.props;
+
+function normalize(str: string) {
+  return str.replaceAll("-", " ").replace(/^\d+\./, "");
+}
+---
+
+<SidebarGroup>
+  <Fragment slot="label">{normalize(entry.label)}</Fragment>
+  {
+    entry.children.map((entry) =>
+      "type" in entry ? (
+        <Astro.self  group={group} entry={entry} />
+      ) : (
+        <SidebarItem group={group} href={entry.slug}> {entry.sidebar.label} </SidebarItem>
+      ),
+    )
+  }
+</SidebarGroup>

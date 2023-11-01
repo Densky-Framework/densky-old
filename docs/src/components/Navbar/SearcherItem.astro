@@ -1,0 +1,78 @@
+---
+import DocumentIcon from "@icons/document.astro";
+---
+
+<li role="option" tabindex="-1">
+  <span class="icon">
+    <DocumentIcon width="18" />
+  </span>
+  <p>
+    <span class="title"> Placeholder</span>
+
+    <span class="description">
+      Placeholder description sample. Placeholder description sample.
+      Placeholder description sample. Placeholder description sample.
+    </span>
+  </p>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="13"
+    ><path
+      fill="currentColor"
+      d="M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"
+    ></path></svg
+  >
+</li>
+
+<style lang="scss">
+  @use "../../styles/utils";
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: 0.5rem 0;
+    border-bottom: solid 2px transparent;
+    border-top: solid 2px transparent;
+
+    transition: 150ms ease;
+    transition-property: filter, border-top-color, border-bottom-color;
+
+    &:hover,
+    &:focus {
+      border-bottom-color: #eee3;
+      border-top-color: #eee3;
+      @include utils.dark(filter, brightness(0.8), brightness(1.3));
+
+      .icon {
+        background-color: var(--primary-light);
+        color: white;
+      }
+    }
+  }
+  .icon {
+    display: inline;
+    padding: 0.2rem;
+    background-color: var(--secondary);
+    color: var(--text);
+    border-radius: 5px;
+    transition-property: color, background-color;
+    transition: 150ms ease;
+  }
+
+  p {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .title {
+    font-weight: bold;
+    font-size: 0.9;
+  }
+
+  .description {
+    font-size: 0.8;
+    opacity: 0.8;
+  }
+</style>

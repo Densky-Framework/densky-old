@@ -1,0 +1,50 @@
+
+$primary-light: #ef4303; // #ef4303 | #ff6524
+$primary-dark: #0c1422;
+$secondary-light: #fafafa;
+$secondary-dark: #161f32;
+
+$background-light: #fff;
+$background-dark: #0c1422;
+
+$text-light: #6b7280;
+$text-dark: #9ca3b0;
+$text-contrast-light: #111827;
+$text-contrast-dark: #e5e7eb;
+
+@mixin dark($property, $light-value, $dark-value) {
+  #{$property}: $light-value;
+
+  :root.dark & {
+    #{$property}: $dark-value;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light) & {
+      #{$property}: $dark-value;
+    }
+  }
+}
+
+@mixin dark_block {
+  :root.dark & {
+    @content;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light) & {
+      @content;
+    }
+  }
+}
+
+$breakpoint-2xl: 1536px;
+$breakpoint-xl: 1280px;
+$breakpoint-lg: 1024px;
+$breakpoint-md: 768px;
+
+@mixin breakpoint($point) {
+  @media screen and (min-width: #{$point}) {
+    @content
+  }
+}

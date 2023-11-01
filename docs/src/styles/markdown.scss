@@ -1,0 +1,251 @@
+@use "sass:math";
+@use "./utils";
+
+@import "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
+
+@function em($val, $base: 16) {
+  @return math.div(round(math.div($val, $base) * 100rem), 100);
+}
+
+// 300px with a correctness of -2px for prevent bug on TOC resolve
+$scroll-margin-top: 298px;
+
+.markdown {
+  font-size: em(20);
+  line-height: math.div(36, 20);
+  padding-bottom: 2rem;
+  margin-bottom: em(50);
+
+  > {
+    p {
+      margin-top: em(24, 20);
+      margin-bottom: em(24, 20);
+    }
+
+    h1 {
+      font-size: em(56, 20);
+      margin-top: 0;
+      margin-bottom: em(48, 56);
+      line-height: round(56 / 56);
+    }
+    h2 {
+      font-size: em(36, 20);
+      margin-top: em(56, 20);
+      margin-bottom: em(32, 36);
+      line-height: round(40 / 36);
+    }
+    h3 {
+      font-size: em(30, 20);
+      margin-top: em(56, 24);
+      margin-bottom: em(20, 30);
+      line-height: round(40 / 30);
+    }
+    h4 {
+      margin-top: em(56, 28);
+      margin-bottom: em(12, 20);
+      line-height: round(32 / 20);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      cursor: pointer;
+      scroll-margin-top: #{$scroll-margin-top};
+
+      &:hover::after {
+        content: "\e157";
+        font-family: "Material Symbols Outlined";
+        margin-left: 1ch;
+        color: var(--text);
+        opacity: 0.7;
+        vertical-align: bottom;
+      }
+
+      &.copied:hover::after {
+        content: "Copied";
+        font-family: inherit;
+        font-size: 0.8em;
+      }
+    }
+
+    [class~="lead"] {
+      font-size: em(24, 20);
+      line-height: round(36 / 24);
+      margin-top: em(24, 24);
+      margin-bottom: em(24, 24);
+    }
+    blockquote {
+      margin-top: em(48, 30);
+      margin-bottom: em(48, 30);
+      padding-left: em(32, 30);
+    }
+    img {
+      margin-top: em(40, 20);
+      margin-bottom: em(40, 20);
+    }
+    picture {
+      margin-top: em(40, 20);
+      margin-bottom: em(40, 20);
+    }
+    picture > img {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    video {
+      margin-top: em(40, 20);
+      margin-bottom: em(40, 20);
+    }
+    kbd {
+      font-size: em(18, 20);
+      border-radius: em(5);
+      padding-top: em(5, 20);
+      padding-right: em(8, 20);
+      padding-bottom: em(5, 20);
+      padding-left: em(8, 20);
+    }
+
+    :where(:not(pre)) code {
+      font-size: em(18, 20);
+      background: #{utils.$primary-light};
+      color: white;
+      padding: 0.25rem;
+      border-radius: em(5);
+    }
+
+    pre {
+      font-size: em(18, 20);
+      line-height: round(32 / 18);
+      margin-top: em(36, 18);
+      margin-bottom: em(36, 18);
+      border-radius: em(8);
+      padding-top: em(20, 18);
+      padding-right: em(24, 18);
+      padding-bottom: em(20, 18);
+      padding-left: em(24, 18);
+    }
+    ol {
+      margin-top: em(24, 20);
+      margin-bottom: em(24, 20);
+      padding-left: em(32, 20);
+    }
+    ul {
+      margin-top: em(24, 20);
+      margin-bottom: em(24, 20);
+      padding-left: em(32, 20);
+    }
+    li {
+      margin-top: em(12, 20);
+      margin-bottom: em(12, 20);
+    }
+    ol > li {
+      padding-left: em(8, 20);
+    }
+    ul > li {
+      padding-left: em(8, 20);
+    }
+    ul > li p {
+      margin-top: em(16, 20);
+      margin-bottom: em(16, 20);
+    }
+    ul > li > *:first-child {
+      margin-top: em(24, 20);
+    }
+    ul > li > *:last-child {
+      margin-bottom: em(24, 20);
+    }
+    ol > li > *:first-child {
+      margin-top: em(24, 20);
+    }
+    ol > li > *:last-child {
+      margin-bottom: em(24, 20);
+    }
+    ul ul,
+    ul ol,
+    ol ul,
+    ol ol {
+      margin-top: em(16, 20);
+      margin-bottom: em(16, 20);
+    }
+    dl {
+      margin-top: em(24, 20);
+      margin-bottom: em(24, 20);
+    }
+    dt {
+      margin-top: em(24, 20);
+    }
+    dd {
+      margin-top: em(12, 20);
+      padding-left: em(32, 20);
+    }
+    hr {
+      margin-top: em(56, 20);
+      margin-bottom: em(56, 20);
+    }
+    hr + * {
+      margin-top: 0;
+    }
+    h2 + * {
+      margin-top: 0;
+    }
+    h3 + * {
+      margin-top: 0;
+    }
+    h4 + * {
+      margin-top: 0;
+    }
+    table {
+      font-size: em(18, 20);
+      line-height: round(28 / 18);
+    }
+    thead th {
+      padding-right: em(12, 18);
+      padding-bottom: em(16, 18);
+      padding-left: em(12, 18);
+    }
+    thead th:first-child {
+      padding-left: 0;
+    }
+    thead th:last-child {
+      padding-right: 0;
+    }
+    tbody td,
+    tfoot td {
+      padding-top: em(16, 18);
+      padding-right: em(12, 18);
+      padding-bottom: em(16, 18);
+      padding-left: em(12, 18);
+    }
+    tbody td:first-child,
+    tfoot td:first-child {
+      padding-left: 0;
+    }
+    tbody td:last-child,
+    tfoot td:last-child {
+      padding-right: 0;
+    }
+    figure {
+      margin-top: em(40, 20);
+      margin-bottom: em(40, 20);
+    }
+    figure > * {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    figcaption {
+      font-size: em(18, 20);
+      line-height: round(28 / 18);
+      margin-top: em(18, 18);
+    }
+
+    :first-child {
+      margin-top: 0;
+    }
+
+    :last-child {
+      margin-bottom: 0;
+    }
+  }
+}

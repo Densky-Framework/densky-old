@@ -1,0 +1,28 @@
+<li>
+  <h5>
+    <slot name="label" />
+  </h5>
+  <ul>
+    <slot />
+  </ul>
+</li>
+
+<style lang="scss">
+  @use "../../styles/utils";
+
+  li {
+    margin-top: 1rem;
+  }
+
+  h5 {
+    font-weight: bold;
+    @include utils.dark(color, #121212, #e5e7eb);
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+</style>

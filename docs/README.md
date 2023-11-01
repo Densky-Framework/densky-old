@@ -1,57 +1,46 @@
-# Docus Starter
+# Densky Framework Documentation
 
-Starter template for [Docus](https://docus.dev).
+[![Built with Astro](https://astro.badg.es/v2/built-with-astro/tiny.svg)](https://astro.build)
 
-## Clone
+## 🚀 Project Structure
 
-Clone the repository (using `nuxi`):
+Inside of your Astro , you'll see the following folders and files:
 
-```bash
-npx nuxi init -t themes/docus
+```
+.
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── content/
+│   │   ├── docs/
+│   │   └── config.ts
+│   ├── icons/
+│   ├── pages/
+│   ├── styles/
+│   ├── utils/
+│   └── env.d.ts
+├── astro.config.mjs
+├── package.json
+└── tsconfig.json
 ```
 
-## Setup
+Astro looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
 
-Install dependencies:
+Images can be added to `src/assets/` and embedded in Markdown with a relative link.
 
-```bash
-yarn install
-```
+Static assets, like favicons, can be placed in the `public/` directory.
 
-## Development
+## 🧞 Commands
 
-```bash
-yarn dev
-```
+All commands are run from the root of the project, from a terminal:
 
-## Edge Side Rendering
+| Command                         | Action                                           |
+| :------------------------       | :----------------------------------------------- |
+| `npm install` or `bun install` | Installs dependencies                            |
+| `npm run dev`                  | Starts local dev server at `localhost:4321`      |
+| `npm run build`                | Build your production site to `./dist/`          |
+| `npm run preview`              | Preview your build locally, before deploying     |
+| `npm run astro ...`            | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help`      | Get help using the Astro CLI                     |
 
-Can be deployed to Vercel Functions, Netlify Functions, AWS, and most Node-compatible environments.
-
-Look at all the available presets [here](https://v3.nuxtjs.org/guide/deploy/presets).
-
-```bash
-yarn build
-```
-
-## Static Generation
-
-Use the `generate` command to build your application.
-
-The HTML files will be generated in the .output/public directory and ready to be deployed to any static compatible hosting.
-
-```bash
-yarn generate
-```
-
-## Preview build
-
-You might want to preview the result of your build locally, to do so, run the following command:
-
-```bash
-yarn preview
-```
-
----
-
-For a detailed explanation of how things work, check out [Docus](https://docus.dev).

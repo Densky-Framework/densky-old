@@ -1,0 +1,134 @@
+---
+import { ViewTransitions } from "astro:transitions";
+import Navbar from "./Navbar.astro";
+import Sidebar from "./Sidebar.astro";
+import Footer from "./Footer.astro";
+import Breadcrumb from "./Breadcrumb.astro";
+import TOC from "./TOC.astro";
+import Pagination from "./Pagination.astro";
+import type { PageProps } from "@utils/routing";
+
+import Hamburger from "@icons/Hamburger.astro";
+
+import "@styles/base.scss";
+import "@styles/markdown.scss";
+
+type Props = PageProps & { breadcrumb: [string, string][] };
+const { entry, sidebar, breadcrumb, headings } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="preload"
+      href="/Inter/Inter-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="preload" href="/logo-256px.png" as="image" type="image/png" />
+
+    <title>{entry.data.title}</title>
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/apple-touch-icon.png?v=1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon-32x32.png?v=1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon-16x16.png?v=1"
+    />
+    <link rel="manifest" href="/site.webmanifest?v=1" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=1" color="#5bbad5" />
+    <link rel="shortcut icon" href="/favicon.ico?v=1" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <link rel="stylesheet" href="/inter.font.css" />
+
+    <ViewTransitions fallback="swap" />
+  </head>
+
+  <body>
+    <Navbar />
+    <Sidebar items={sidebar} />
+    <main>
+      <header class="breadcrumb-nav">
+        <Hamburger width="18" />
+        <Breadcrumb items={breadcrumb} />
+      </header>
+
+      <article class="main-layout markdown">
+        <h1 transition:name="article-name" transition:animate="fade">
+          {entry.data.title}
+        </h1>
+        <slot />
+      </article>
+
+      <Pagination sidebar={sidebar.entries} />
+    </main>
+
+    <TOC items={headings} />
+
+    <Footer />
+    <script>
+      import "./spa_helper.ts";
+    </script>
+
+    <style lang="scss">
+      @use "../styles/utils";
+
+      body {
+        background-color: var(--background);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+
+        display: grid;
+        grid-template-columns: 0px 1fr 0px;
+        grid-template-rows: 64px 1fr auto 150px;
+
+        font-size: 0.9rem;
+
+        overflow-x: hidden;
+        max-width: 1280px;
+        margin: 0 auto;
+        @include utils.breakpoint(utils.$breakpoint-md) {
+        grid-template-columns: 250px 1fr 250px;
+        }
+      }
+
+      main {
+        grid-column: 1 / span 3;
+        padding: 1rem;
+        @include utils.breakpoint(utils.$breakpoint-md) {
+          grid-column: span 2;
+          padding: 1rem 0;
+          padding-right: 1rem;
+        }
+
+        @include utils.breakpoint(utils.$breakpoint-lg) {
+          grid-column: span 1;
+        }
+      }
+
+      .breadcrumb-nav {
+        display: flex;
+        gap: 1ch;
+        align-items: center;
+
+        @include utils.breakpoint(utils.$breakpoint-md) {
+          display: none;
+        }
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,131 @@
+@use "sass:list";
+@use "sass:color";
+@use "utils";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-contrast);
+}
+
+ul,
+li {
+  appearance: none;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: color.adjust(utils.$primary-light, $saturation: -15%);
+
+  &:hover {
+    filter: brightness(1.2);
+  }
+}
+
+button,
+input {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+@mixin set_color_variables($color_name, $light_value, $dark_value) {
+  --#{$color_name}-light: #{$light_value};
+  --#{$color_name}-dark: #{$dark_value};
+}
+
+:root {
+  @include set_color_variables(
+    primary,
+    utils.$primary-light,
+    utils.$primary-dark
+  );
+  @include set_color_variables(
+    secondary,
+    utils.$secondary-light,
+    utils.$secondary-dark
+  );
+  @include set_color_variables(
+    background,
+    utils.$background-light,
+    utils.$background-dark
+  );
+  @include set_color_variables(text, utils.$text-light, utils.$text-dark);
+  @include set_color_variables(
+    text-contrast,
+    utils.$text-contrast-light,
+    utils.$text-contrast-dark
+  );
+
+  font-family: "Inter", sans-serif;
+
+  &.dark {
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:not(.light) {
+      color-scheme: dark;
+    }
+  }
+}
+
+@mixin set_color_mode($mode, $colors) {
+  @each $color in $colors {
+    --#{$color}: var(--#{$color}-#{$mode});
+  }
+}
+
+body {
+  $-color-names: primary, secondary, background, text, text-contrast;
+  @include set_color_mode(light, $-color-names);
+
+  color: var(--text);
+
+  overscroll-behavior: none;
+
+  @include utils.dark_block() {
+    @include set_color_mode(dark, $-color-names);
+  }
+}
+
+// https://scrollbar-generator.netlify.app
+/* Firefox */
+* {
+  --scrollbar-background: var(--background);
+  scrollbar-width: thin;
+  scrollbar-color: color.adjust(utils.$primary-light, $saturation: -20%)
+    var(--scrollbar-background);
+}
+
+/* Other browsers */
+*::-webkit-scrollbar {
+  width: 16px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-background);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: color.adjust(utils.$primary-light, $saturation: -20%);
+  border-radius: 50px;
+  border: 4px solid var(--scrollbar-background);
+}

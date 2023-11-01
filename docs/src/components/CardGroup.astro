@@ -1,0 +1,20 @@
+<div>
+  <slot />
+</div>
+
+<style lang="scss">
+  @use "../styles/utils";
+
+  div {
+    margin-top: 2rem;
+    display: grid;
+--columns: 1;
+    grid-template-columns: repeat(var(--columns), 1fr);
+    gap: 1ch;
+
+    @include utils.breakpoint(utils.$breakpoint-lg) {
+--columns: 2;
+    }
+
+  }
+</style>
