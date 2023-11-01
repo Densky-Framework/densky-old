@@ -1,21 +1,32 @@
 {
-  "name": "docus-starter",
-  "version": "0.1.0",
-  "private": true,
+  "name": "docs",
+  "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "dev": "nuxi dev",
-    "build": "nuxi build",
-    "generate": "nuxi generate",
-    "preview": "nuxi preview",
-    "lint": "eslint ."
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.2.1",
+    "@astrojs/mdx": "^1.1.2",
+    "@astrojs/ts-plugin": "^1.2.0",
+    "@types/unist": "^3.0.1",
+    "astro": "^3.3.0",
+    "hastscript": "^8.0.0",
+    "mdast-util-directive": "^3.0.0",
+    "mdast-util-to-hast": "^13.0.2",
+    "remark-directive": "^3.0.0",
+    "sass": "^1.69.3",
+    "sharp": "^0.32.5",
+    "typescript": "^5.2.2",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
-    "@nuxt-themes/docus": "^1.14.3",
-    "@nuxt/devtools": "^0.6.7",
-    "@nuxt/eslint-config": "^0.1.1",
-    "@nuxtjs/plausible": "^0.2.1",
-    "@types/node": "^20.4.0",
-    "eslint": "^8.44.0",
-    "nuxt": "^3.6.2"
+    "postcss-scss": "^4.0.9",
+    "prettier": "^3.0.3",
+    "prettier-plugin-astro": "^0.12.0"
   }
 }

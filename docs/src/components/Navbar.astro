@@ -1,0 +1,61 @@
+---
+import Searcher from "./Navbar/Searcher.astro";
+import ThemeSwitcher from "./Navbar/ThemeSwitcher.astro";
+---
+
+<header>
+  <img
+    class="navbar-icon"
+    src="/logo-256px.png"
+    width="50"
+    height="50"
+    alt="light logo"
+  />
+  <div class="navbar-toolbar">
+    <Searcher />
+    <ThemeSwitcher />
+  </div>
+</header>
+
+<style lang="scss">
+  @use "../styles/utils";
+
+  header {
+    grid-column: 1 / span 3;
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    align-items: center;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0px;
+    z-index: 9;
+
+    box-shadow: 0 5px 5px -5px #0009;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+
+      backdrop-filter: blur(5px);
+      z-index: -1;
+    }
+
+    @include utils.breakpoint(utils.$breakpoint-md) {
+      box-shadow: none;
+    }
+  }
+
+  .navbar-icon {
+  }
+
+  .navbar-toolbar {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+  }
+</style>

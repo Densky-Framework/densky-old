@@ -1,0 +1,63 @@
+---
+import RightArrowIOS from "@icons/RightArrowIOS.astro";
+import LeftArrowIOS from "@icons/LeftArrowIOS.astro";
+import { getPrevNextLinks, type SidebarEntry } from "@utils/navigation";
+
+interface Props {
+  sidebar: SidebarEntry["children"];
+}
+
+const { sidebar } = Astro.props;
+
+const { prev, next } = getPrevNextLinks(sidebar, Astro.url.pathname);
+---
+
+<footer>
+  <div>
+    {
+      prev && (
+        <a href={"/docs/" + prev.slug}>
+          <LeftArrowIOS width="1em" /> {prev.title}
+        </a>
+      )
+    }
+  </div>
+  <div>
+    {
+      next && (
+        <a href={"/docs/" + next.slug}>
+          {next.title} <RightArrowIOS width="1em" />
+        </a>
+      )
+    }
+  </div>
+</footer>
+
+<style>
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  a {
+    font-family: inherit;
+    cursor: pointer;
+    border: solid 2px var(--primary-light);
+    padding: 1.25rem;
+    background: transparent;
+    color: white;
+    border-radius: 5px;
+
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    transition: filter 100ms ease;
+
+    &:hover {
+      filter: brightness(1.4);
+      background-color: #ffffff05;
+    }
+  }
+</style>

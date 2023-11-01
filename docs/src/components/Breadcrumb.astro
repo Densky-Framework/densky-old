@@ -1,0 +1,32 @@
+---
+import RightArrowIOS from "@icons/RightArrowIOS.astro";
+
+interface Props {
+  items: Array<[string, string]>;
+}
+const items = Astro.props.items ?? [];
+---
+
+<ul>
+  {
+    items.map(([label, href], idx) => (
+      <>
+        <li>
+          <a href={href}>{label}</a>
+          {idx !== items.length - 1 && <RightArrowIOS width="10" />}
+        </li>
+      </>
+    ))
+  }
+</ul>
+
+<style>
+  ul {
+    display: flex;
+    gap: 1ch;
+  }
+  li {
+    display: flex;
+    gap: 1ch;
+  }
+</style>

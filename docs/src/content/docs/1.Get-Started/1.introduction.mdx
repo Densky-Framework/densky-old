@@ -1,0 +1,41 @@
+---
+title: Introduction
+---
+
+import Tip from "@components/Tip.astro"
+
+Densky (pronounced `Denski`) is the backend framework for Deno. A backend framework is an opinionated and complete workspace made to simplify all of the common problems and needs of the backend developers.
+
+## Installation
+There are many ways to install `densky-cli`:
+
+### Windows
+```bash
+irm https://densky.apika.me/install.ps1 | iex
+```
+
+### Linux / Macos
+```bash
+curl -fsSL http://densky.apika.me/install.sh | sh -s v0.2.0-alpha1
+```
+
+### Cargo
+```bash
+cargo install densky
+```
+
+## Create a new project
+Start a new Densky project with:
+
+```bash
+densky init <folder-name>
+```
+
+Run the dev command to start Densky in development mode:
+```bash
+densky dev
+```
+
+<Tip type="success" title="✨ Well done!">
+You should open for http://localhost:3000 in your browser
+</Tip>

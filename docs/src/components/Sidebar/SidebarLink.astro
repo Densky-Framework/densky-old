@@ -1,0 +1,49 @@
+---
+const { href, label } = Astro.props;
+---
+
+<li>
+  <a
+    href={href}
+    target="_blank"
+    rel="noreferrer"
+  >
+    <div class="icon">
+      <slot />
+    </div>
+
+    {label}
+  </a>
+</li>
+
+<style lang="scss">
+  @use "@styles/utils";
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 2ch;
+    color: var(--text);
+
+    &:hover {
+      filter: brightness(1.3);
+
+      .icon {
+        background: var(--primary-light);
+        color: white;
+      }
+    }
+
+    .icon {
+      background: var(--secondary);
+      border: solid transparent 2px;
+      border-radius: 5px;
+      color: var(--text);
+      padding: 0.3rem 0.4rem;
+
+      @include utils.dark_block {
+        border-color: #373f49;
+      }
+    }
+  }
+</style>

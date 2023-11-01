@@ -1,0 +1,53 @@
+---
+import { Debug } from "astro:components";
+
+interface Props {
+  group: string;
+  href: string;
+}
+
+const { group, href } = Astro.props;
+const _href = "/" + group + "/" + href;
+---
+
+<li>
+  <a href={_href} class:list={{ active: Astro.url.pathname === _href }}>
+    <slot />
+  </a>
+</li>
+
+<style lang="scss">
+  @use "../../styles/utils";
+  @use "sass:color";
+
+  li {
+    display: block;
+  }
+
+  a {
+    padding: 0.5rem 1rem;
+    margin-left: -1rem;
+    display: block;
+    color: var(--text);
+
+    border-radius: 5px;
+
+    transition: 100ms ease;
+    transition-property: background, color;
+
+    &.active {
+      pointer-events: none;
+      color: var(--primary-light);
+      background: color.adjust(
+        utils.$primary-light,
+        $lightness: 10%,
+        $alpha: -0.8
+      );
+    }
+
+    &:hover {
+      background: #5553;
+      color: white;
+    }
+  }
+</style>

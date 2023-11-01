@@ -1,0 +1,22 @@
+---
+import type { InferGetStaticPropsType } from "astro";
+import { paths, generateRouteData } from "@utils/routing.ts";
+
+import Page from "@components/Page.astro";
+
+export async function getStaticPaths() {
+  return paths;
+}
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { Content, headings, remarkPluginFrontmatter } =
+  await Astro.props.entry.render();
+
+const route = generateRouteData({
+  ...Astro.props,
+  headings,
+  remarkPluginFrontmatter,
+});
+---
+
+<Page {...route}><Content /></Page>
