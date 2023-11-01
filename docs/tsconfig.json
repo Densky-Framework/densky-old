@@ -1,7 +1,4 @@
 {
-<<<<<<< HEAD
-  "extends": "./.nuxt/tsconfig.json"
-=======
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "plugins": [
@@ -19,5 +16,4 @@
       "@utils/*": ["src/utils/*"]
     }
   }
->>>>>>> main
 }
