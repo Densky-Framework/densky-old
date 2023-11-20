@@ -1,0 +1,6 @@
+[densky]
+verbose = true
+output = ".densky" # Not recommended, this is a full-feature example
+
+[cloud.http-router]
+version = "../clouds/http-router/"

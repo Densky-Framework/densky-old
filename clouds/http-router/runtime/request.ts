@@ -1,5 +1,5 @@
-import { HTTPMethodStr } from "../types.ts";
-import { Cookies } from "../services/cookies/mod.ts";
+import { HTTPMethodStr } from "./types.ts";
+import { Cookies } from "./services/cookies/mod.ts";
 
 type Accumulator = {
   readonly segments: string[];
@@ -7,7 +7,6 @@ type Accumulator = {
 };
 
 export class HTTPRequest {
-  // readonly raw: Request;
   readonly method: HTTPMethodStr;
   readonly headers: Headers;
   readonly reqHeaders: Headers;

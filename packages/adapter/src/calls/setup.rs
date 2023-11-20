@@ -9,7 +9,7 @@ pub struct CloudSetup {
     pub dependencies: Vec<CloudDependency>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CloudDependency {
     pub name: String,
     pub version: String,

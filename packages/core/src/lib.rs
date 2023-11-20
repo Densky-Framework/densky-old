@@ -4,6 +4,7 @@ pub extern crate dprint_plugin_typescript;
 extern crate dynamic_html;
 extern crate libloading;
 extern crate pathdiff;
+extern crate toml_edit;
 extern crate walkdir;
 
 // pub mod http;
@@ -15,4 +16,4 @@ pub mod utils;
 // pub mod views;
 
 pub use manifest::Manifest;
-pub use options::{CompileContext, CompileOptions};
+pub use options::{CompileContext, CompileOptions, ConfigFile};

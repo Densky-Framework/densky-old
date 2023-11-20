@@ -1,6 +1,7 @@
 use super::_macro::def_command;
 use std::{
     ffi::OsStr,
+    fs,
     path::PathBuf,
     process,
     sync::{
@@ -18,9 +19,7 @@ use crate::{
 };
 use clap::{value_parser, ValueHint};
 use densky_core::{
-    densky_adapter::utils::{join_paths, Fmt},
-    sky::CloudPlugin,
-    CompileContext, Manifest,
+    densky_adapter::utils::join_paths, sky::CloudPlugin, CompileContext, ConfigFile, Manifest,
 };
 
 def_command!(DevCommand("dev") {
@@ -30,39 +29,48 @@ def_command!(DevCommand("dev") {
         value_parser: value_parser!(PathBuf),
     },
 
-    --lib(=lib, "Library path, without 'lib' prefix or extensions") {
-        value_hint: clap::ValueHint::FilePath,
-        value_parser: clap::value_parser!(PathBuf),
-        |f| f.required(true)
-    },
-
     process: process
 });
 
 fn process(matches: &clap::ArgMatches) {
-    let lib_path = matches.get_one::<PathBuf>("lib").unwrap();
-
-    let mut plugin = CloudPlugin::new(lib_path).unwrap();
-    plugin
-        .setup()
-        .expect("CloudSetup is required on any cloud plugin");
-
     let folder = matches.get_one::<PathBuf>("folder").unwrap();
     let cwd = std::env::current_dir().unwrap();
     let target_path: PathBuf = join_paths(folder, cwd).into();
+
+    let config_file = fs::read_to_string(join_paths("densky.toml", &target_path)).unwrap();
+    let config_file = ConfigFile::parse(config_file, &target_path).unwrap();
+
+    println!("{config_file:#?}");
 
     let watching_path = target_path.clone();
     let mut watching_poll = PollWatcher::new(watching_path).unwrap();
 
     let compile_context = CompileContext {
-        output_dir: join_paths(".densky", &target_path),
+        output_dir: config_file.output.display().to_string(),
         cwd: target_path.display().to_string(),
         verbose: true,
     };
 
+    let clouds = &config_file.dependencies;
+    let progress = progress::create_bar(clouds.len(), "Loading clouds");
+    let mut loaded_clouds: Vec<CloudPlugin> = Vec::new();
+
+    for cloud in clouds.values() {
+        progress.set_message(cloud.name.clone());
+        let cloud_libname = format!("cloud_{}", cloud.name.replace("-", "_"));
+        let cloud_path = join_paths(&cloud.version, &target_path);
+        let mut cloud = CloudPlugin::new(cloud_libname, cloud_path).unwrap();
+        cloud.setup();
+        loaded_clouds.push(cloud);
+
+        progress.tick();
+    }
+
+    progress.finish();
+
     let progress = progress::create_spinner(Some("Discovering"));
 
-    match write_aux_files(&compile_context) {
+    match write_aux_files(&compile_context, &config_file) {
         Ok(_) => (),
         Err(e) => {
             eprintln!("Error on first build: {e}");
@@ -71,28 +79,13 @@ fn process(matches: &clap::ArgMatches) {
     };
     progress.tick();
 
-    let http_container = plugin.resolve_optimized_tree(&compile_context).unwrap();
-    progress.tick();
+    for cloud in loaded_clouds.iter() {
+        let http_container = cloud.resolve_optimized_tree(&compile_context).unwrap();
 
-    Manifest::update(&http_container, &plugin, &compile_context).unwrap();
-    progress.tick();
-
-    // let views = view_discover(&compile_context);
+        Manifest::update(&http_container, &cloud, &compile_context).unwrap();
+    }
 
     progress.finish();
-    // for view in views {
-    //     process_view(view);
-    // }
-
-    println!(
-        "\x1B[2J\x1B[1;1H{}\n",
-        Fmt(|f| http_container
-            .get_root()
-            .unwrap()
-            .read()
-            .unwrap()
-            .display(f, &http_container))
-    );
 
     let mut deno = process::Command::new("deno")
         .args(["run", "-A"])
@@ -105,7 +98,21 @@ fn process(matches: &clap::ArgMatches) {
         signal_hook::flag::register(signal_hook::consts::SIGINT, Arc::clone(&term)).unwrap();
 
     '_loop: loop {
-        handle_update(&compile_context, &plugin, &mut watching_poll);
+        let event = watching_poll.poll();
+        if event.len() != 0 {
+            for cloud in loaded_clouds.iter() {
+                let http_container = cloud.resolve_optimized_tree(&compile_context).unwrap();
+
+                match Manifest::update(&http_container, &cloud, &compile_context) {
+                    Ok(_) => {}
+                    Err(err) => {
+                        eprintln!("Error updating manifest: {err}")
+                    }
+                }
+            }
+
+            send_update(event.iter().map(|e| (e.kind.clone(), &e.path)));
+        }
 
         // wait to interrupt
         if term.load(Ordering::Relaxed) {
@@ -116,31 +123,6 @@ fn process(matches: &clap::ArgMatches) {
         }
 
         thread::sleep(Duration::from_millis(200));
-    }
-}
-
-fn handle_update(
-    compile_context: &CompileContext,
-    plugin: &CloudPlugin,
-    watching_poll: &mut PollWatcher,
-) {
-    let event = watching_poll.poll();
-    if event.len() != 0 {
-        let http_container = plugin.resolve_optimized_tree(&compile_context).unwrap();
-
-        // let views = view_discover(&compile_context);
-        // for view in views {
-        //     process_view(view);
-        // }
-
-        match Manifest::update(&http_container, &plugin, &compile_context) {
-            Ok(_) => {}
-            Err(err) => {
-                eprintln!("Error updating manifest: {err}")
-            }
-        }
-
-        send_update(event.iter().map(|e| (e.kind.clone(), &e.path)));
     }
 }
 

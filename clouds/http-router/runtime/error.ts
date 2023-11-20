@@ -1,5 +1,5 @@
-import { PrimitiveObject, StatusCode, statusMessages } from "../types.ts";
-import color from "../colors.ts";
+import { colors, PrimitiveObject } from "densky/cloud.ts";
+import { StatusCode, statusMessages } from "./types.ts";
 
 export class HTTPError {
   readonly message: string;
@@ -46,8 +46,7 @@ export class HTTPError {
     error: Error,
     statusCode: number | StatusCode = StatusCode.INTERNAL_ERR,
   ): HTTPError {
-    // console.error(color.red`[HTTP ${statusCode}] ` + error.message);
-    console.error(color.red`[HTTP ${statusCode}]`,error);
+    console.error(colors.red`[HTTP ${statusCode}]`, error);
 
     return new HTTPError(statusCode, error.message)
       .withName(error.name)

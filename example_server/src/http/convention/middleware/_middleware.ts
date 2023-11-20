@@ -1,4 +1,4 @@
-import { HTTPRequest } from "densky";
+import { HTTPRequest } from "densky/http-router.ts";
 
 export function GET(req: HTTPRequest) {
   if (req.url.searchParams.has("mid")) {

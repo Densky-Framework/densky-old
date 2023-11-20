@@ -1,4 +1,4 @@
-import { HTTPError, HTTPRequest, StatusCode } from "densky";
+import { HTTPError, HTTPRequest, StatusCode } from "densky/http-router.ts";
 
 export default async (req: HTTPRequest) => {
   const data = req.data.get("data");

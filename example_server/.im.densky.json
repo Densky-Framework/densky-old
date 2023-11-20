@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "densky/mod.ts": "../packages/runtime/mod.ts",
+    "densky/cloud.ts": "../packages/runtime/cloud.ts",
+    "densky/http-router.ts": "../clouds/http-router/runtime.ts"
+  }
+}

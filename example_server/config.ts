@@ -1,5 +1,4 @@
-import { CompileOptions } from "densky/types.ts";
-import { setCWD } from "densky/global.ts";
+import { setCWD, type CompileOptions } from "densky/mod.ts";
 
 // I will not need this anymore.
 const pathname = new URL(import.meta.resolve("./")).pathname;

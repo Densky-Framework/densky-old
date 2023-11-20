@@ -1,3 +1,4 @@
+use std::ops;
 use std::path::PathBuf;
 
 use ahash::AHashMap;
@@ -133,4 +134,119 @@ pub enum CloudFileResolve {
     /// }
     /// ```
     MultiThorn(&'static str),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CloudManifestUpdate {
+    arguments: AHashMap<String, String>,
+    content: Option<String>,
+    imports: AHashMap<String, String>,
+}
+
+impl CloudManifestUpdate {
+    pub fn new() -> Self {
+        Self {
+            arguments: AHashMap::new(),
+            content: None,
+            imports: AHashMap::new(),
+        }
+    }
+
+    pub fn new_content(content: impl Into<String>) -> Self {
+        Self {
+            arguments: AHashMap::new(),
+            content: Some(content.into()),
+            imports: AHashMap::new(),
+        }
+    }
+
+    pub fn set_content(mut self, content: impl Into<String>) -> Self {
+        self.content = Some(content.into());
+        self
+    }
+
+    pub fn append_content(mut self, content: impl AsRef<str>) -> Self {
+        match self.content.as_mut() {
+            Some(c) => *c += content.as_ref(),
+            None => self.content = Some(content.as_ref().into()),
+        }
+
+        self
+    }
+
+    pub fn add_import(mut self, items: impl Into<String>, path: impl Into<String>) -> Self {
+        self.imports.insert(path.into(), items.into());
+        self
+    }
+
+    pub fn add_argument(mut self, name: impl Into<String>, def: impl Into<String>) -> Self {
+        self.arguments.insert(name.into(), def.into());
+        self
+    }
+
+    pub fn arguments(&self) -> &AHashMap<String, String> {
+        &self.arguments
+    }
+
+    pub fn content(&self) -> Option<&String> {
+        self.content.as_ref()
+    }
+
+    pub fn imports(&self) -> &AHashMap<String, String> {
+        &self.imports
+    }
+}
+
+impl ops::AddAssign<&CloudManifestUpdate> for CloudManifestUpdate {
+    fn add_assign(&mut self, rhs: &CloudManifestUpdate) {
+        for (path, items) in rhs.imports() {
+            let a = self.imports.get_mut(path);
+
+            match a {
+                Some(a) => *a += items,
+                None => {
+                    self.imports.insert(path.into(), items.into());
+                }
+            }
+        }
+
+        for (arg, def) in rhs.arguments() {
+            let old_def = self.arguments.get(arg);
+
+            if let Some(old_def) = old_def {
+                if def != old_def {
+                    panic!("Conflicting argument {}. {:#?} != {:#?}", arg, def, old_def);
+                }
+            } else {
+                self.arguments.insert(arg.into(), def.into());
+            }
+        }
+    }
+}
+
+impl ops::AddAssign<CloudManifestUpdate> for CloudManifestUpdate {
+    fn add_assign(&mut self, rhs: CloudManifestUpdate) {
+        for (path, items) in rhs.imports() {
+            let a = self.imports.get_mut(path);
+
+            match a {
+                Some(a) => *a += items,
+                None => {
+                    self.imports.insert(path.into(), items.into());
+                }
+            }
+        }
+
+        for (arg, def) in rhs.arguments() {
+            let old_def = self.arguments.get(arg);
+
+            if let Some(old_def) = old_def {
+                if def != old_def {
+                    panic!("Conflicting argument {}. {:#?} != {:#?}", arg, def, old_def);
+                }
+            } else {
+                self.arguments.insert(arg.into(), def.into());
+            }
+        }
+    }
 }

@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Test file watcher
 
 cd example_server || exit 1
 

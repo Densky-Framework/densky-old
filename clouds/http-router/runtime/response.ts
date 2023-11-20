@@ -9,8 +9,6 @@ export class HTTPResponse {
     data?: unknown,
     init?: ResponseInit,
   ): Promise<Response> {
-    // const view = await import(this.viewsPath + "/" + path + ".ts");
-
     return new Response(
       JSON.stringify({
         view_path: path,
@@ -40,11 +38,6 @@ export class HTTPResponse {
     }
 
     if (response instanceof Response) {
-      console.log(req.headers, response.headers);
-      console.log(Object.fromEntries([
-          ...req.headers.entries(),
-          ...response.headers.entries(),
-        ]));
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,

@@ -5,7 +5,9 @@ pub mod context;
 
 use std::path::PathBuf;
 
-use densky_adapter::{context::CloudContextRaw, CloudFile, CloudFileResolve, OptimizedTreeLeaf};
+use densky_adapter::{
+    context::CloudContextRaw, CloudFile, CloudFileResolve, CloudManifestUpdate, OptimizedTreeLeaf,
+};
 
 // use context::HttpRouterContext;
 
@@ -71,12 +73,19 @@ pub fn cloud_file_resolve(file: CloudFile, _context: CloudContextRaw) -> CloudFi
 }
 
 #[no_mangle]
-pub fn cloud_file_process(
+pub fn cloud_before_manifest() -> CloudManifestUpdate {
+    CloudManifestUpdate::new()
+        .add_import("{ type HTTPRequest }", "densky/http-router.ts")
+        .add_argument("req", "HTTPRequest")
+}
+
+#[no_mangle]
+pub fn cloud_manifest(
     leaf: OptimizedTreeLeaf,
     static_children: String,
     children: String,
     dynamic_child: String,
-) -> String {
+) -> CloudManifestUpdate {
     let pathname_comment = format!("// {}", leaf.pathname);
     let children = if static_children.is_empty() {
         children
@@ -118,18 +127,18 @@ pub fn cloud_file_process(
             .map(|i| format!("if (req.__accumulator__.segments.length === 0) {{ {i} }}"))
             .unwrap_or_default();
 
-        format!(
+        CloudManifestUpdate::new_content(format!(
             r#"{children}
                 {pathname_comment}
                 {inner}
                 {dynamic_child}"#,
-        )
+        ))
     } else {
         if leaf.is_static {
-            format!(
+            CloudManifestUpdate::new_content(format!(
                 "{pathname_comment}\n{}",
                 inner.expect("Static leafs should have index")
-            )
+            ))
         } else {
             let inner = inner
                 .map(|i| format!("if (req.__accumulator__.segments.length === 0) {{ {i} }}"))
@@ -137,7 +146,8 @@ pub fn cloud_file_process(
 
             if let Some(varname) = leaf.varname {
                 let varname = &varname[1..];
-                format!(
+
+                CloudManifestUpdate::new_content(format!(
                     r#"{pathname_comment}
                             {{
                                 const __var_{varname} = req.__accumulator__.segments.shift();
@@ -148,13 +158,13 @@ pub fn cloud_file_process(
                                 {inner}
                                 {dynamic_child}
                             }}"#
-                )
+                ))
             } else {
                 let slash_count = leaf.relative_pathname.chars().filter(|c| c == &'/').count();
                 // The first part doesn't have slash
                 let slash_count = slash_count + 1;
 
-                format!(
+                CloudManifestUpdate::new_content(format!(
                     r#"{pathname_comment}
                         if (req.__accumulator__.path.startsWith("{}/")) {{
                             req.__accumulator__.segments = req.__accumulator__.segments.slice({slash_count});
@@ -165,7 +175,7 @@ pub fn cloud_file_process(
                             {dynamic_child}
                         }}"#,
                     leaf.relative_pathname
-                )
+                ))
             }
         }
     }

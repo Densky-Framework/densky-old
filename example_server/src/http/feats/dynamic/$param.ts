@@ -1,4 +1,4 @@
-import { HTTPRequest, HTTPResponse } from "densky";
+import { HTTPRequest, HTTPResponse } from "densky/http-router.ts";
 
 export async function GET(req: HTTPRequest) {
   const condition =
@@ -10,7 +10,7 @@ export async function GET(req: HTTPRequest) {
     condition,
     param,
     num,
-    obj: {hi: 1},
+    obj: { hi: 1 },
     title: "Dynamic",
   });
 }

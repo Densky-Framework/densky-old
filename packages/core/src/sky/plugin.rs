@@ -1,11 +1,13 @@
-use densky_adapter::{CloudFilesStrategy, CloudOptimizedTreeProcessCall, OptimizedTreeLeaf};
+use densky_adapter::{
+    CloudBeforeManifestCall, CloudFilesStrategy, CloudManifestUpdate, CloudOptimizedManifestCall,
+    OptimizedTreeLeaf,
+};
 use libloading::{Library, Symbol};
 use std::path::{Path, PathBuf};
 
 use densky_adapter::{
-    context::CloudContextRaw, log_info, log_trace, log_warn, utils::Fmt, CloudContextCall,
-    CloudDebugContextCall, CloudFile, CloudFileResolve, CloudFileResolveCall, CloudSetup,
-    CloudSetupCall,
+    context::CloudContextRaw, log_trace, log_warn, CloudContextCall, CloudDebugContextCall,
+    CloudFile, CloudFileResolve, CloudFileResolveCall, CloudSetup, CloudSetupCall,
 };
 
 use crate::optimized_tree::{optimized_tree_strategy, OptimizedTreeContainer};
@@ -39,19 +41,14 @@ impl CloudPlugin {
 }
 
 impl CloudPlugin {
-    pub fn new(lib_path: impl AsRef<Path>) -> Result<CloudPlugin, CloudPluginError> {
-        let lib_path = lib_path.as_ref();
-        let libname = lib_path
-            .file_name()
-            .ok_or_else(|| CloudPluginError::MalformedInput("lib_path"))?;
-        let dir_path = lib_path
-            .parent()
-            .ok_or_else(|| CloudPluginError::MalformedInput("lib_path"))?;
-
+    pub fn new(
+        libname: String,
+        lib_path: impl AsRef<Path>,
+    ) -> Result<CloudPlugin, CloudPluginError> {
         unsafe {
-            let lib = open_cloud(libname, dir_path);
+            let lib = open_cloud(&libname, lib_path);
             Ok(CloudPlugin {
-                name: libname.to_str().unwrap().to_string(),
+                name: libname,
                 lib,
                 setup: None,
                 context: None,
@@ -94,7 +91,7 @@ impl CloudPlugin {
     pub unsafe fn cloud_setup(&mut self) -> Option<()> {
         let lib_setup = get_cloud_call!(self, CloudSetupCall);
         let lib_setup = try_call!(lib_setup())?;
-        log_info!([self.name] "Setup: {lib_setup:#?}");
+        // log_info!([self.name] "Setup: {lib_setup:#?}");
         self.name = lib_setup.name.clone();
         self.setup = Some(lib_setup);
         Some(())
@@ -144,14 +141,20 @@ impl CloudPlugin {
         Some(lib_file_resolve)
     }
 
-    pub unsafe fn cloud_optimized_tree_process(
+    pub unsafe fn cloud_before_manifest(&self) -> Option<CloudManifestUpdate> {
+        let lib_call = get_cloud_call!(self, CloudBeforeManifestCall)?;
+        let lib_call = lib_call();
+        Some(lib_call)
+    }
+
+    pub unsafe fn cloud_optimized_manifest_call(
         &self,
         leaf: OptimizedTreeLeaf,
         static_children: String,
         children: String,
         dynamic_child: String,
-    ) -> Option<String> {
-        let lib_file_resolve = get_cloud_call!(self, CloudOptimizedTreeProcessCall)?;
+    ) -> Option<CloudManifestUpdate> {
+        let lib_file_resolve = get_cloud_call!(self, CloudOptimizedManifestCall)?;
         let lib_file_resolve = lib_file_resolve(leaf, static_children, children, dynamic_child);
         Some(lib_file_resolve)
     }
