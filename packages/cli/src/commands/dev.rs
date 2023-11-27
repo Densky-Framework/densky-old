@@ -1,8 +1,7 @@
 use super::_macro::def_command;
 use std::{
-    ffi::OsStr,
     fs,
-    path::PathBuf,
+    path::{Path, PathBuf},
     process,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -19,7 +18,8 @@ use crate::{
 };
 use clap::{value_parser, ValueHint};
 use densky_core::{
-    densky_adapter::utils::join_paths, sky::CloudPlugin, CompileContext, ConfigFile, Manifest,
+    anyhow, densky_adapter::utils::join_paths, sky::CloudPlugin, CompileContext, ConfigFile,
+    ErrorContext, Manifest, Result,
 };
 
 def_command!(DevCommand("dev") {
@@ -32,18 +32,20 @@ def_command!(DevCommand("dev") {
     process: process
 });
 
-fn process(matches: &clap::ArgMatches) {
+fn process(matches: &clap::ArgMatches) -> Result<()> {
     let folder = matches.get_one::<PathBuf>("folder").unwrap();
-    let cwd = std::env::current_dir().unwrap();
+    let cwd = std::env::current_dir()?;
     let target_path: PathBuf = join_paths(folder, cwd).into();
 
-    let config_file = fs::read_to_string(join_paths("densky.toml", &target_path)).unwrap();
-    let config_file = ConfigFile::parse(config_file, &target_path).unwrap();
+    let config_file = join_paths("densky.toml", &target_path);
+    let config_file =
+        fs::read_to_string(&config_file).with_context(|| anyhow!("Can't read {config_file}."))?;
+    let config_file = ConfigFile::parse(config_file, &target_path)?;
 
     println!("{config_file:#?}");
 
     let watching_path = target_path.clone();
-    let mut watching_poll = PollWatcher::new(watching_path).unwrap();
+    let mut watching_poll = PollWatcher::new(watching_path)?;
 
     let compile_context = CompileContext {
         output_dir: config_file.output.display().to_string(),
@@ -59,8 +61,8 @@ fn process(matches: &clap::ArgMatches) {
         progress.set_message(cloud.name.clone());
         let cloud_libname = format!("cloud_{}", cloud.name.replace("-", "_"));
         let cloud_path = join_paths(&cloud.version, &target_path);
-        let mut cloud = CloudPlugin::new(cloud_libname, cloud_path).unwrap();
-        cloud.setup();
+        let mut cloud = CloudPlugin::new(cloud_libname, cloud_path)?;
+        cloud.setup()?;
         loaded_clouds.push(cloud);
 
         progress.tick();
@@ -73,16 +75,16 @@ fn process(matches: &clap::ArgMatches) {
     match write_aux_files(&compile_context, &config_file) {
         Ok(_) => (),
         Err(e) => {
-            eprintln!("Error on first build: {e}");
-            return;
+            return Err(anyhow!("Error on first build: {e}"));
         }
     };
     progress.tick();
 
     for cloud in loaded_clouds.iter() {
-        let http_container = cloud.resolve_optimized_tree(&compile_context).unwrap();
+        let http_container = cloud.resolve_optimized_tree(&compile_context)?;
 
-        Manifest::update(&http_container, &cloud, &compile_context).unwrap();
+        Manifest::update(&http_container, &cloud, &compile_context)?;
+        progress.tick();
     }
 
     progress.finish();
@@ -101,7 +103,7 @@ fn process(matches: &clap::ArgMatches) {
         let event = watching_poll.poll();
         if event.len() != 0 {
             for cloud in loaded_clouds.iter() {
-                let http_container = cloud.resolve_optimized_tree(&compile_context).unwrap();
+                let http_container = cloud.resolve_optimized_tree(&compile_context)?;
 
                 match Manifest::update(&http_container, &cloud, &compile_context) {
                     Ok(_) => {}
@@ -119,7 +121,7 @@ fn process(matches: &clap::ArgMatches) {
             // TODO: Check memory leaks on this line
             assert!(signal_hook::low_level::unregister(sigint));
             let _ = deno.kill(); // Err(): Command wasn't running
-            return;
+            return Ok(());
         }
 
         thread::sleep(Duration::from_millis(200));
@@ -129,7 +131,7 @@ fn process(matches: &clap::ArgMatches) {
 fn send_update<I, P>(files: I)
 where
     I: Iterator<Item = (WatchKind, P)>,
-    P: AsRef<OsStr>,
+    P: AsRef<Path>,
 {
     let mut files_json = "[".to_owned();
     for file in files {
@@ -142,7 +144,7 @@ where
         files_json += "[\"";
         files_json += kind;
         files_json += "\",\"";
-        files_json += file.1.as_ref().to_str().unwrap();
+        files_json += &file.1.as_ref().display().to_string();
         files_json += "\"],";
     }
     files_json.pop();

@@ -33,11 +33,10 @@ export class HTTPRequest {
     this.cookies = new Cookies(raw.headers, this.headers);
 
     this.url = new URL(raw.url);
-    this.pathname = this.url.pathname;
 
     // By Parts
     {
-      const targetParts = this.pathname.split("/");
+      const targetParts = this.url.pathname.split("/");
       targetParts.shift();
       // Remove last if it's empty, handle "/my/path/"
       last_empty: {
@@ -50,9 +49,11 @@ export class HTTPRequest {
       this.segments = targetParts;
     }
 
+    this.pathname = "/" + this.segments.join("/");
+
     this.__accumulator__ = {
       segments: this.segments,
-      path: this.pathname.slice(1),
+      path: this.segments.join("/"),
     };
   }
 

@@ -5,9 +5,8 @@ pub mod Manifest {
     use crate::optimized_tree::OptimizedTreeContainer;
     use crate::sky::CloudPlugin;
     use crate::utils::format_js;
-    use crate::CompileContext;
     use densky_adapter::utils::join_paths;
-    use densky_adapter::CloudManifestUpdate;
+    use densky_adapter::{CloudManifestUpdate, CompileContext};
 
     /// Generate TS code for this node and children
     fn build_node(
@@ -23,12 +22,19 @@ pub mod Manifest {
 
         for (pathname, id) in node.static_children.iter() {
             let children_update = build_node(*id, plugin, container);
+            let children_content = &String::new();
+            let children_content = match children_update.content() {
+                Some(c) => c,
+                None => children_content,
+            };
 
-            static_children.reserve_exact(pathname.len() + 13);
+            const EXTRA_LEN: usize = "\"".len() + "\": () => {".len() + "},".len();
+
+            static_children.reserve_exact(pathname.len() + children_content.len() + EXTRA_LEN);
             static_children.push('"');
             static_children += pathname;
             static_children.push_str("\": () => {");
-            static_children += &children_update.content().unwrap_or(&String::new());
+            static_children += children_content;
             static_children.push('}');
             static_children.push(',');
 
@@ -88,7 +94,7 @@ pub mod Manifest {
 
         let before_updates = unsafe { plugin.cloud_before_manifest() };
 
-        if let Some(before_updates) = before_updates {
+        if let Ok(before_updates) = before_updates {
             for import in before_updates.imports() {
                 imports += &format!("import {} from \"{}\";\n", import.1, import.0);
             }

@@ -101,8 +101,14 @@ macro_rules! def_command {
                 cmd
             }
 
-            pub fn process( matches: &clap::ArgMatches ) {
-                $(let _ = $process(matches);)?
+            pub fn process( matches: &::clap::ArgMatches ) {
+                #[allow(unused)]
+                let r: densky_core::Result<()> = Ok(());
+                $(let r = $process(matches);)?
+
+                if let Err(err) = r {
+                    eprintln!("{err:?}");
+                }
             }
         }
     };

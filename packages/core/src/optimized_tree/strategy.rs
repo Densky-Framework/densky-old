@@ -4,7 +4,8 @@ use std::{
 };
 
 use densky_adapter::{
-    log::PathDebugDisplay, log_trace, utils::join_paths, CloudFile, CloudFileResolve,
+    anyhow, log::PathDebugDisplay, log_trace, utils::join_paths, CloudFile, CloudFileResolve,
+    CompileContext, Result,
 };
 use pathdiff::diff_paths;
 use walkdir::WalkDir;
@@ -14,15 +15,14 @@ use crate::{
         node::OptimizedTreeNodeInsertResult, OptimizedTreeContainer, OptimizedTreeNode,
     },
     sky::CloudPlugin,
-    CompileContext,
 };
 
 pub fn optimized_tree_strategy(
     input_path: impl AsRef<Path>,
     plugin: &CloudPlugin,
     ctx: &CompileContext,
-) -> (OptimizedTreeContainer, Arc<RwLock<OptimizedTreeNode>>) {
-    let output_dir = join_paths(&plugin.get_setup().source_folder, &ctx.output_dir);
+) -> Result<(OptimizedTreeContainer, Arc<RwLock<OptimizedTreeNode>>)> {
+    let output_dir = join_paths(&plugin.get_setup()?.source_folder, &ctx.output_dir);
 
     let mut container = OptimizedTreeContainer::new(output_dir.clone());
     let root = container.create_root();
@@ -92,7 +92,7 @@ pub fn optimized_tree_strategy(
                 output_path,
                 extension,
             },
-        );
+        )?;
 
         // println!(
         //     "{:#?}",
@@ -100,7 +100,7 @@ pub fn optimized_tree_strategy(
         // )
     }
 
-    (container, root)
+    Ok((container, root))
 }
 
 struct InsertContext<'a> {
@@ -115,38 +115,49 @@ fn perform_insert_action(
     node: u64,
     action: OptimizedTreeNodeInsertResult,
     context: &mut InsertContext<'_>,
-) {
+) -> Result<()> {
     match action {
         OptimizedTreeNodeInsertResult::Resolve(new_parent, suffix) => {
             let resolved_file = resolve_file(node, &suffix, context);
 
-            let root = context.container.nodes.get(new_parent).unwrap().clone();
-            let next_iter =
-                root.write()
-                    .unwrap()
-                    .insert(node, resolved_file, &mut context.container);
+            let root = context
+                .container
+                .nodes
+                .get(new_parent)
+                .ok_or_else(|| anyhow!("Node not found. {new_parent}"))?
+                .clone();
+            let next_iter = root
+                .write()
+                .map_err(|err| anyhow!("Poisoned write: {err}"))?
+                .insert(node, resolved_file, &mut context.container);
 
             perform_insert_action(node, next_iter, context)
         }
         OptimizedTreeNodeInsertResult::RemoveNode => {
             log_trace!(["OTreeStrategy"] "Removing {node}");
             context.container.nodes.remove(node);
+            Ok(())
         }
         OptimizedTreeNodeInsertResult::MergeNodes(new_node, node_b_suffix) => {
             log_trace!(["OTreeStrategy"] "Merging ({})", node_b_suffix);
 
-            let root = context.container.nodes.get(new_node).unwrap().clone();
+            let root = context
+                .container
+                .nodes
+                .get(new_node)
+                .ok_or_else(|| anyhow!("Node not found. {new_node}"))?
+                .clone();
 
             let resolved_node_b = resolve_file(node, &node_b_suffix, context);
-            let next_iter_b =
-                root.write()
-                    .unwrap()
-                    .insert(node, resolved_node_b, &mut context.container);
+            let next_iter_b = root
+                .write()
+                .map_err(|err| anyhow!("Poisoned write: {err}"))?
+                .insert(node, resolved_node_b, &mut context.container);
 
             perform_insert_action(node, next_iter_b, context)
         }
-        OptimizedTreeNodeInsertResult::None => {}
-    };
+        OptimizedTreeNodeInsertResult::None => Ok(()),
+    }
 }
 
 fn resolve_file<'a>(

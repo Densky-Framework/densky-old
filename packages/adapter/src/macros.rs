@@ -31,7 +31,8 @@ macro_rules! cloud_setup {
         $vec.push($crate::CloudDependency {
             name: stringify!($dependency).to_string(),
             version: ($version).into(),
-            optional: $optional
+            optional: $optional,
+            options: $crate::AHashMap::new()
         });
         $crate::cloud_setup!(!list, $vec, $($tail)*);
     };

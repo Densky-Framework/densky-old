@@ -5,8 +5,7 @@ use std::{
     sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
 };
 
-use ahash::AHashMap;
-use densky_adapter::{log_debug, log_error, utils::join_paths};
+use densky_adapter::{log_debug, log_error, utils::join_paths, AHashMap};
 
 use super::OptimizedTreeNode;
 

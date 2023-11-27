@@ -1,10 +1,10 @@
 mod file_process;
 mod setup;
 
-pub use self::file_process::{CloudFile, CloudFileResolve, CloudManifestUpdate, OptimizedTreeLeaf};
-pub use self::setup::{CloudDependency, CloudFilesStrategy, CloudSetup};
+pub use self::file_process::*;
+pub use self::setup::*;
 
-use crate::context::CloudContextRaw;
+use crate::context;
 
 macro_rules! create_call {
     ($call_name:ident, $symbol:expr, $($fn:tt)+) => {
@@ -19,32 +19,48 @@ macro_rules! create_call {
 }
 
 // Cloud Setup
-create_call!(CloudSetupCall, b"cloud_setup", fn() -> CloudSetup);
-create_call!(CloudContextCall, b"cloud_context", fn() -> CloudContextRaw);
+create_call!(
+    CloudSetupCall,
+    b"cloud_setup",
+    fn() -> anyhow::Result<setup::CloudSetup>
+);
+create_call!(
+    CloudContextCall,
+    b"cloud_context",
+    fn() -> anyhow::Result<context::CloudContextRaw>
+);
 create_call!(
     CloudDebugContextCall,
     b"cloud_debug_context",
-    fn(CloudContextRaw) -> ()
+    fn(context::CloudContextRaw) -> ()
 );
 create_call!(
     CloudPostSetupCall,
     b"cloud_post_setup",
-    fn(CloudContextRaw) -> ()
+    fn(context::CloudContextRaw) -> ()
 );
 
 // File Processing
 create_call!(
     CloudFileResolveCall,
     b"cloud_file_resolve",
-    fn(CloudFile, CloudContextRaw) -> CloudFileResolve
+    fn(
+        file_process::CloudFile,
+        context::CloudContextRaw,
+    ) -> anyhow::Result<file_process::CloudFileResolve>
 );
 create_call!(
     CloudBeforeManifestCall,
     b"cloud_before_manifest",
-    fn() -> CloudManifestUpdate
+    fn() -> anyhow::Result<file_process::CloudManifestUpdate>
 );
 create_call!(
     CloudOptimizedManifestCall,
     b"cloud_manifest",
-    fn(OptimizedTreeLeaf, String, String, String) -> CloudManifestUpdate
+    fn(
+        OptimizedTreeLeaf,
+        String,
+        String,
+        String,
+    ) -> anyhow::Result<file_process::CloudManifestUpdate>
 );
