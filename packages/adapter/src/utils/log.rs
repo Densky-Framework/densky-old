@@ -104,20 +104,20 @@ macro_rules! log_info {
 #[macro_export(local_inner_macros)]
 macro_rules! log_debug {
     ([$title:expr] ($body_color:ident) $($body:tt)*) => {
-        $crate::log::_log!((Debug, $title)[FgBlue | Dim | Italic, "[{}]"] [$body_color | Dim] $($body)*);
+        $crate::log::_log!((Debug, $title)[FgBlue | Dim, "[{}]"] [$body_color | Dim] $($body)*);
     };
     ([$title:expr] $($body:tt)*) => {
-        $crate::log::_log!((Debug, $title)[FgBlue | Dim | Italic, "[{}]"] [Dim] $($body)*);
+        $crate::log::_log!((Debug, $title)[FgBlue | Dim, "[{}]"] [Dim] $($body)*);
     };
 }
 
 #[macro_export(local_inner_macros)]
 macro_rules! log_trace {
     ([$title:expr] ($body_color:ident) $($body:tt)*) => {
-        $crate::log::_log!((Trace, $title)[FgBlue | Dim | Italic, "[{}]"] [$body_color | Dim] $($body)*);
+        $crate::log::_log!((Trace, $title)[FgBlue | Dim, "[{}]"] [$body_color | Dim] $($body)*);
     };
     ([$title:expr] $($body:tt)*) => {
-        $crate::log::_log!((Trace, $title)[FgBlue | Dim | Italic, "[{}]"] [Dim] $($body)*);
+        $crate::log::_log!((Trace, $title)[FgBlue | Dim, "[{}]"] [Dim] $($body)*);
     };
 }
 

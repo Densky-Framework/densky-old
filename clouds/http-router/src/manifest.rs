@@ -1,4 +1,4 @@
-use densky_adapter::{CloudManifestUpdate, CompileContext, OptimizedTreeLeaf, Result};
+use densky_adapter::{CloudManifestUpdate, OptimizedTreeLeaf, Result};
 
 #[no_mangle]
 pub fn cloud_before_manifest() -> Result<CloudManifestUpdate> {
@@ -13,7 +13,6 @@ pub fn cloud_manifest(
     static_children: String,
     children: String,
     dynamic_child: String,
-    context: CompileContext,
 ) -> Result<CloudManifestUpdate> {
     let pathname_comment = format!("// {}", leaf.pathname);
     let children = if static_children.is_empty() {

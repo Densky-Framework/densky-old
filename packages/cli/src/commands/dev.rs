@@ -1,6 +1,6 @@
 use super::_macro::def_command;
+use std::env;
 use std::{
-    fs,
     path::{Path, PathBuf},
     process,
     sync::{
@@ -17,9 +17,13 @@ use crate::{
     watcher::{PollWatcher, WatchKind},
 };
 use clap::{value_parser, ValueHint};
+use densky_core::densky_adapter::CloudVersion;
+use densky_core::sky::search_cloud;
 use densky_core::{
-    anyhow, densky_adapter::utils::join_paths, sky::CloudPlugin, CompileContext, ConfigFile,
-    ErrorContext, Manifest, Result,
+    anyhow,
+    densky_adapter::{log_error, utils::join_paths},
+    sky::CloudPlugin,
+    CompileContext, ConfigFile, Manifest, Result,
 };
 
 def_command!(DevCommand("dev") {
@@ -37,10 +41,7 @@ fn process(matches: &clap::ArgMatches) -> Result<()> {
     let cwd = std::env::current_dir()?;
     let target_path: PathBuf = join_paths(folder, cwd).into();
 
-    let config_file = join_paths("densky.toml", &target_path);
-    let config_file =
-        fs::read_to_string(&config_file).with_context(|| anyhow!("Can't read {config_file}."))?;
-    let config_file = ConfigFile::parse(config_file, &target_path)?;
+    let config_file = ConfigFile::discover(&target_path)?;
 
     println!("{config_file:#?}");
 
@@ -57,10 +58,25 @@ fn process(matches: &clap::ArgMatches) -> Result<()> {
     let progress = progress::create_bar(clouds.len(), "Loading clouds");
     let mut loaded_clouds: Vec<CloudPlugin> = Vec::new();
 
+    let densky_installation = env::var("DENSKY_INSTALL").unwrap_or_else(|_| {
+        env::var("HOME")
+            .map(|x| format!("{x}/.densky"))
+            .unwrap_or_default()
+    });
+    let densky_installation: PathBuf = densky_installation.into();
+    let cloud_search_entries = [vec![densky_installation], config_file.vendor.clone()].concat();
+
     for cloud in clouds.values() {
         progress.set_message(cloud.name.clone());
         let cloud_libname = format!("cloud_{}", cloud.name.replace("-", "_"));
-        let cloud_path = join_paths(&cloud.version, &target_path);
+
+        let cloud_path = match &cloud.version {
+            CloudVersion::Path(p) => join_paths(&p, &target_path).into(),
+            CloudVersion::Semver(_) => search_cloud(&cloud.name, &cloud_search_entries)
+                .ok_or(anyhow!("Can't find cloud"))?,
+            CloudVersion::Unknown(_) => unreachable!(),
+        };
+
         let mut cloud = CloudPlugin::new(cloud_libname, cloud_path)?;
         cloud.setup()?;
         loaded_clouds.push(cloud);
@@ -89,11 +105,14 @@ fn process(matches: &clap::ArgMatches) -> Result<()> {
 
     progress.finish();
 
-    let mut deno = process::Command::new("deno")
+    let Ok(mut deno) = process::Command::new("deno")
         .args(["run", "-A"])
         .arg(format!("{}/.densky/dev.ts", target_path.display()))
         .spawn()
-        .expect("deno command failed to run");
+    else {
+        log_error!(["RUNTIME"] "Deno command failed to run.\nCheck your Deno installation:\n > deno --version");
+        std::process::exit(1);
+    };
 
     let term = Arc::new(AtomicBool::new(false));
     let sigint =

@@ -1,3 +1,6 @@
+use std::path::PathBuf;
+use std::str::FromStr;
+
 use ahash::AHashMap;
 
 #[derive(Debug)]
@@ -12,9 +15,41 @@ pub struct CloudSetup {
 }
 
 #[derive(Debug, Clone)]
+pub enum CloudVersion {
+    Semver(semver::VersionReq),
+    Path(PathBuf),
+    Unknown(String),
+}
+
+impl From<&str> for CloudVersion {
+    fn from(value: &str) -> Self {
+        let version = semver::VersionReq::parse(&value);
+        if let Ok(version) = version {
+            CloudVersion::Semver(version)
+        } else if let Ok(path) = PathBuf::from_str(&value) {
+            CloudVersion::Path(path)
+        } else {
+            CloudVersion::Unknown(value.to_string())
+        }
+    }
+}
+impl From<String> for CloudVersion {
+    fn from(value: String) -> Self {
+        let version = semver::VersionReq::parse(&value);
+        if let Ok(version) = version {
+            CloudVersion::Semver(version)
+        } else if let Ok(path) = PathBuf::from_str(&value) {
+            CloudVersion::Path(path)
+        } else {
+            CloudVersion::Unknown(value)
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct CloudDependency {
     pub name: String,
-    pub version: String,
+    pub version: CloudVersion,
     pub optional: bool,
 
     pub options: AHashMap<String, CloudDependencyOption>,

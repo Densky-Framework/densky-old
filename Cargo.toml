@@ -4,5 +4,9 @@ members = [
   "packages/cli",
   "packages/core",
   "packages/dynamic-html",
-  "clouds/http-router"
+  "clouds/http-router",
+  "clouds/views",
 ]
+
+[workspace.dependencies]
+densky-adapter = { path = "./packages/adapter/" }

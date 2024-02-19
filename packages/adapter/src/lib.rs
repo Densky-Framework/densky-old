@@ -1,6 +1,7 @@
 extern crate ahash;
 extern crate anyhow;
 extern crate pathdiff;
+pub extern crate semver;
 pub extern crate thiserror;
 
 pub use ahash::{AHashMap, AHashSet};

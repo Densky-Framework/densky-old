@@ -18,7 +18,7 @@ export class HTTPResponse {
         status: 200,
         ...init,
         headers: {
-          "Content-Type": "text/html",
+          "Content-Type": "application/json",
           ...init?.headers,
         },
       },

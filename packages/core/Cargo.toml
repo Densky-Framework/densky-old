@@ -18,5 +18,5 @@ regex = "1.7.1"
 recur-fn = "2.2.0"
 walkdir = "2.3.3"
 dprint-plugin-typescript = "0.88.1"
-toml_edit = "0.21.0"
+jsonc-parser = "0.23.0"
 

@@ -12,6 +12,7 @@ import {
 import { HTTPRequest } from "./request.ts";
 import { HTTPResponse } from "./response.ts";
 import { EntryController } from "./types.ts";
+import { HTTP_HOOKS } from "./hooks.ts";
 
 type ControllerResolved = {
   middlewares: Array<string>;
@@ -78,12 +79,14 @@ DevServer.hooks.registerHook("beforeWatchUpdate", () => {
 });
 
 DevServer.hooks.registerHook("watchUpdate", (kind, path) => {
+  cache.get(path) &&
+    logger.info(
+      kind.toUpperCase(),
+      " WATCHER ",
+      relativePath(Globals.cwd, path),
+    );
+
   cache.delete(path);
-  logger.info(
-    kind.toUpperCase(),
-    " WATCHER ",
-    relativePath(Globals.cwd, path),
-  );
 });
 
 BaseServer.hooks.registerHook("request", async (r) => {
@@ -92,7 +95,7 @@ BaseServer.hooks.registerHook("request", async (r) => {
     if (u.pathname.startsWith("/$")) return null;
   }
 
-  const req = new HTTPRequest(r);
+  const raw = new HTTPRequest(r);
 
   if (!manifestResolver) {
     type ManifestResolverModule = { default: ManifestResolver };
@@ -102,9 +105,16 @@ BaseServer.hooks.registerHook("request", async (r) => {
     ).then((m) => (m as ManifestResolverModule).default);
   }
 
-  const resolvedController = manifestResolver!(req);
+  const resolvedController = manifestResolver!(raw);
   if (resolvedController == null) {
     return new Response("Not Found", { status: 404 });
+  }
+
+  const req = await HTTP_HOOKS.emitHook("beforeRequest", [raw]) ?? raw;
+
+  {
+    const out = await HTTP_HOOKS.emitHook("request", [req]);
+    if (out) return out;
   }
 
   for (const middleware of resolvedController.middlewares) {

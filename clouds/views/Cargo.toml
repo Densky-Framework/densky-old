@@ -1,7 +1,7 @@
 [package]
-name = "cloud-http-router"
-description = "HTTP router cloud for Densky Framework"
-version = "0.2.0"
+name = "cloud-views"
+description = "HTML views cloud for Densky Framework"
+version = "0.1.0"
 license = "MIT"
 homepage = "https://github.com/Densky-Framework/densky"
 documentation = "https://densky.apika.me"

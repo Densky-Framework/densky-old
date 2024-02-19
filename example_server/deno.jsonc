@@ -1,0 +1,23 @@
+{
+	"$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+
+	"tasks": {
+		"dev": "cargo run --package densky -- dev",
+		"build": "cargo run --package densky -- build",
+		"start": "deno run --allow-read=./ --allow-net ./main.ts"
+	},
+
+	"densky": {
+		"verbose": true,
+		"output": ".densky", // Not recommended, this is a full-feature example
+		"vendor": ["../clouds/"],
+
+		"clouds": {
+			"http-router": {
+				"version": "*"
+			}
+		}
+	},
+
+	"importMap": "./.im.densky.json"
+}
