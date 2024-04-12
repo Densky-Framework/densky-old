@@ -172,7 +172,7 @@ impl CloudPlugin {
         }
     }
 
-    // pub fn file_resolve(&mut self, ctx: &CompileContext) -> Option<()> {
+    // pub fn file_resolve(&mut self, ctx: &CompileContext) -> Result<()> {
     //     use densky_adapter::CloudFilesStrategy::*;
     //     let setup = self.get_setup();
     //     match setup.file_strategy {

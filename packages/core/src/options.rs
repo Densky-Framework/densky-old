@@ -30,7 +30,12 @@ impl Debug for ConfigFile {
 
 impl ConfigFile {
     pub fn discover(cwd: &PathBuf) -> densky_adapter::Result<ConfigFile> {
-        let (config_file_path, config_file) = discover_file(vec![join_paths("densky.json", &cwd)])?;
+        let (config_file_path, config_file) = discover_file(vec![
+            join_paths("deno.jsonc", &cwd),
+            join_paths("deno.json", &cwd),
+            join_paths("densky.jsonc", &cwd),
+            join_paths("densky.json", &cwd),
+        ])?;
         let config_file = read_file(config_file, config_file_path.display())?;
         Self::parse(config_file, &cwd)
     }
@@ -45,9 +50,7 @@ impl ConfigFile {
         };
 
         let densky = &JsonObject::new(Default::default());
-        let densky = doc
-            .get_object("densky")
-            .unwrap_or(densky);
+        let densky = doc.get_object("densky").unwrap_or(densky);
         let verbose = densky.get_boolean("verbose").unwrap_or_default();
         let output = densky
             .get_string("output")
@@ -59,7 +62,9 @@ impl ConfigFile {
             vendor
                 .iter()
                 .filter_map(|x| match x {
-                    JsonValue::String(ref v) => Some(join_paths(v.clone().into_owned(), &cwd).into()),
+                    JsonValue::String(ref v) => {
+                        Some(join_paths(v.clone().into_owned(), &cwd).into())
+                    }
                     _ => None,
                 })
                 .collect::<Vec<PathBuf>>()
@@ -67,13 +72,28 @@ impl ConfigFile {
             Vec::new()
         };
 
-        let dependencies = if let Some(clouds) = doc.get_object("clouds") {
+        let dependencies = if let Some(clouds) = densky.get_object("clouds") {
             let mut dependencies = AHashMap::new();
 
             for (cloud_name, cloud) in clouds.clone().into_iter() {
                 match cloud {
-                    JsonValue::String(_) => {
-                        todo!("Manage version directly")
+                    JsonValue::String(v) => {
+                        let version = v.into_owned();
+                        let version = CloudVersion::from(version);
+
+                        if let CloudVersion::Unknown(version) = version {
+                            eprintln!("Invalid version '{version}'");
+                            continue;
+                        }
+                        let dependency = CloudDependency {
+                            name: cloud_name.clone(),
+                            version,
+                            optional: false,
+
+                            options: Default::default(),
+                        };
+
+                        dependencies.insert(cloud_name.into(), dependency);
                     }
                     JsonValue::Object(ref cloud) => {
                         let version = cloud
@@ -112,7 +132,7 @@ impl ConfigFile {
 
                         //     opts
                         // } else {
-                        let options = AHashMap::new();
+                        let options = Default::default();
                         // };
 
                         let dependency = CloudDependency {

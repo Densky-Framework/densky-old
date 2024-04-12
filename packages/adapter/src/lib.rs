@@ -10,6 +10,7 @@ pub use anyhow::{anyhow, Context as ErrorContext, Error, Result};
 mod calls;
 pub mod context;
 pub mod macros;
+pub mod optimized_tree;
 pub mod utils;
 
 pub use calls::*;

@@ -195,6 +195,20 @@ impl CloudManifestUpdate {
     pub fn imports(&self) -> &AHashMap<String, String> {
         &self.imports
     }
+
+    pub fn build_update(&self, imports: &mut String, args: &mut String, content: &mut String) {
+        for import in &self.imports {
+            *imports += &format!("import {} from \"{}\";\n", import.1, import.0);
+        }
+
+        for arg in &self.arguments {
+            *args += &format!("{}: {}", arg.0, arg.1);
+        }
+
+        if let Some(c) = &self.content {
+            *content += c;
+        }
+    }
 }
 
 impl ops::AddAssign<&CloudManifestUpdate> for CloudManifestUpdate {

@@ -2,11 +2,11 @@
 pub mod Manifest {
     use std::{fs, io};
 
-    use crate::optimized_tree::OptimizedTreeContainer;
     use crate::sky::CloudPlugin;
     use crate::utils::format_js;
     use densky_adapter::utils::join_paths;
     use densky_adapter::{CloudManifestUpdate, CompileContext};
+    use optimized_tree::OptimizedTreeContainer;
 
     /// Generate TS code for this node and children
     fn build_node(
@@ -15,13 +15,13 @@ pub mod Manifest {
         container: &OptimizedTreeContainer,
     ) -> CloudManifestUpdate {
         let mut updates = CloudManifestUpdate::new();
-        let node = container.nodes.get_reader(id).unwrap(); // NOTE: This uses container
+        let node = container.nodes.get_reader(id).unwrap();
 
         let mut static_children = String::new();
         let mut children = String::new();
 
         for (pathname, id) in node.static_children.iter() {
-            let children_update = build_node(*id, plugin, container); // NOTE: This uses container
+            let children_update = build_node(*id, plugin, container);
             let children_content = &String::new();
             let children_content = match children_update.content() {
                 Some(c) => c,
@@ -42,18 +42,18 @@ pub mod Manifest {
         }
 
         for (_, id) in node.dynamic_children.iter() {
-            let children_update = build_node(*id, plugin, container); // NOTE: This uses container
+            let children_update = build_node(*id, plugin, container);
             children += &children_update.content().unwrap_or(&String::new());
 
             updates += children_update;
         }
 
         let dynamic_child = if let Some((id, varname)) = node.dynamic.as_ref() {
-            let mut child = container.nodes.get_writer(*id).unwrap(); // NOTE: This uses container
+            let mut child = container.nodes.get_writer(*id).unwrap();
             child.varname = Some(varname.clone());
             drop(child);
 
-            build_node(*id, plugin, container) // NOTE: This uses container
+            build_node(*id, plugin, container)
         } else {
             CloudManifestUpdate::new()
         };
@@ -63,7 +63,7 @@ pub mod Manifest {
         let binding = String::new();
         let dynamic_child = dynamic_child.content().unwrap_or(&binding);
 
-        let leaf = node.into_leaf(container); // NOTE: This uses container
+        let leaf = node.into_leaf(container);
         let plugin_updates = unsafe {
             plugin
                 .cloud_optimized_manifest_call(

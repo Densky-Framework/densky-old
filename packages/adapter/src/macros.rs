@@ -55,6 +55,7 @@ macro_rules! cloud_setup {
     }) => {
         static CLOUD_NAME: &'static str = stringify!($cloud_name);
 
+        #[allow(unused_mut)]
         #[no_mangle]
         pub fn cloud_setup() -> $crate::CloudSetup {
             let version = env!("CARGO_PKG_VERSION");

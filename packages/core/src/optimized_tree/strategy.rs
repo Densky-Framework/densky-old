@@ -4,18 +4,19 @@ use std::{
 };
 
 use densky_adapter::{
-    anyhow, log::PathDebugDisplay, log_trace, utils::join_paths, CloudFile, CloudFileResolve,
-    CompileContext, Result,
+    anyhow,
+    log::PathDebugDisplay,
+    log_trace,
+    optimized_tree::{
+        node::OptimizedTreeNodeInsertResult, OptimizedTreeContainer, OptimizedTreeNode,
+    },
+    utils::join_paths,
+    CloudFile, CloudFileResolve, CompileContext, Result,
 };
 use pathdiff::diff_paths;
 use walkdir::WalkDir;
 
-use crate::{
-    optimized_tree::{
-        node::OptimizedTreeNodeInsertResult, OptimizedTreeContainer, OptimizedTreeNode,
-    },
-    sky::CloudPlugin,
-};
+use crate::sky::CloudPlugin;
 
 pub fn optimized_tree_strategy(
     input_path: impl AsRef<Path>,

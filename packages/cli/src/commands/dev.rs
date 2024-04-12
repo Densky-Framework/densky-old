@@ -17,7 +17,7 @@ use crate::{
     watcher::{PollWatcher, WatchKind},
 };
 use clap::{value_parser, ValueHint};
-use densky_core::densky_adapter::CloudVersion;
+use densky_core::densky_adapter::{log_warn, CloudVersion};
 use densky_core::sky::search_cloud;
 use densky_core::{
     anyhow,
@@ -72,8 +72,12 @@ fn process(matches: &clap::ArgMatches) -> Result<()> {
 
         let cloud_path = match &cloud.version {
             CloudVersion::Path(p) => join_paths(&p, &target_path).into(),
-            CloudVersion::Semver(_) => search_cloud(&cloud.name, &cloud_search_entries)
-                .ok_or(anyhow!("Can't find cloud"))?,
+            CloudVersion::Semver(_) => {
+                // TODO: Implement version requirement
+                log_warn!(["TODO"] "Ignoring version requirements");
+                search_cloud(&cloud.name, &cloud_search_entries)
+                    .ok_or(anyhow!("Can't find cloud"))?
+            }
             CloudVersion::Unknown(_) => unreachable!(),
         };
 

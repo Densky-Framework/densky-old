@@ -8,15 +8,6 @@ use dprint_plugin_typescript::{configuration as dprint_config, format_text};
 pub use self::importer::*;
 pub use self::url_to_matcher::*;
 
-static mut GLOBAL_NEXT_NODE_ID: u64 = 0;
-
-pub fn next_node_id() -> u64 {
-    unsafe {
-        GLOBAL_NEXT_NODE_ID += 1;
-        GLOBAL_NEXT_NODE_ID
-    }
-}
-
 pub fn format_js(txt: impl Into<String>) -> String {
     let config = dprint_config::ConfigurationBuilder::new()
         .line_width(80)

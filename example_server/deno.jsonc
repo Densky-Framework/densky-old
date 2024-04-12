@@ -13,9 +13,11 @@
 		"vendor": ["../clouds/"],
 
 		"clouds": {
-			"http-router": {
-				"version": "*"
-			}
+			"http-router": "*",
+			"views": "*"
+			// "http-router": {
+			// 	"version": "*"
+			// }
 		}
 	},
 
