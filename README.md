@@ -8,7 +8,7 @@
 </p>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/maintained-yes-blue" alt="maintained - yes">
+  <img src="https://img.shields.io/badge/maintained-no-blue" alt="maintained - no">
   <a href="https://rust-lang.org/" title="Go to Rust homepage"><img src="https://img.shields.io/badge/Rust-orange?logo=rust&logoColor=white" alt="Made with Rust"></a>
   <a href="https://deno.land" title="Go to Deno homepage"><img src="https://img.shields.io/badge/Deno-blue?logo=deno&logoColor=white" alt="Made with Deno"></a>
 </div>
