@@ -1,3 +1,7 @@
+> This project is being rewritten to follow the actual demands.
+>
+> Should be found [here](https://github.com/Densky-Framework/densky)
+
 <p align="center">
   <img src=".github/logo-720px.png" width="256px" />
   <h1 align="center"> Densky Framework </h1>
